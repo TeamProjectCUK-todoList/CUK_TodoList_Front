@@ -1,7 +1,7 @@
 import React from "react";
 import {ListItem, ListItemText, InputBase, Checkbox, ListItemSecondaryAction, IconButton}from "@material-ui/core";
 import DeleteOutlined from "@material-ui/icons/DeleteOutlined";
-class Todo extends React.Component{
+class Event extends React.Component{
     constructor(props){
         super(props);
         this.state={item: props.item, readOnly:true};  //매개변수 item의 변수/값을 item에 대입
@@ -73,4 +73,4 @@ class Todo extends React.Component{
     }
 }
 
-export default Todo;
+export default Event;

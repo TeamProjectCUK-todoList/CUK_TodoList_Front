@@ -1,6 +1,8 @@
 import React from 'react';
 import Todo from './Todo';
 import AddTodo from './AddTodo';
+import Event from './Event';
+import AddEvent from './AddEvent';
 import MyCalendar from './components/Calendar';
 import { Paper, List, Container, Grid, Button, AppBar, Toolbar, Typography, Box, IconButton } from "@material-ui/core";
 import { ArrowBack, ArrowForward } from '@material-ui/icons';
@@ -13,15 +15,18 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      items: [],
+      todoItems: [],
+      eventItems: [],
       loading: true,
       date: new Date(),
       todoDates: [],
+      eventDates: [],
       activeStartDate: startOfMonth(new Date())
     };
   }
 
-  add = (item) => {
+  // Todo 관련
+  addTodo = (item) => {
     const { date } = this.state;
     const utcDate = toDate(date, { timeZone: 'UTC' });
     const formattedDate = format(utcDate, 'yyyy-MM-dd');
@@ -29,22 +34,41 @@ class App extends React.Component {
     call("/todo", "POST", newItem).then(() => this.loadTodosByDate(date));
   }
 
-  delete = (item) => {
+  deleteTodo = (item) => {
     call("/todo", "DELETE", item).then(() => this.loadTodosByDate(this.state.date));
   }
 
-  update = (item) => {
+  updateTodo = (item) => {
     call("/todo", "PUT", item).then(() => this.loadTodosByDate(this.state.date));
+  }
+
+  // Event 관련  
+  addEvent = (item) => {
+    const { date } = this.state;
+    const utcDate = toDate(date, { timeZone: 'UTC' });
+    const formattedDate = format(utcDate, 'yyyy-MM-dd');
+    const newItem = { ...item, date: formattedDate };
+    call("/event", "POST", newItem).then(() => this.loadEventsByDate(date));
+  }
+
+  deleteEvent = (item) => {
+    call("/event", "DELETE", item).then(() => this.loadEventsByDate(this.state.date));
+  }
+
+  updateEvent = (item) => {
+    call("/event", "PUT", item).then(() => this.loadEventsByDate(this.state.date));
   }
 
   componentDidMount() {
     this.loadTodosByDate(this.state.date);
+    this.loadEventsByDate(this.state.date);
   }
 
   handleDateChange = (days) => {
     this.setState((prevState) => {
       const newDate = addDays(prevState.date, days);
       this.loadTodosByDate(newDate);
+      this.loadEventsByDate(newDate);
       return { 
         date: newDate, 
         activeStartDate: startOfMonth(newDate) 
@@ -56,14 +80,18 @@ class App extends React.Component {
     this.setState({ 
       date,
       activeStartDate: startOfMonth(date) 
-    }, () => this.loadTodosByDate(date));
+    }, () => {
+      this.loadTodosByDate(date);
+      this.loadEventsByDate(date);
+    });
   }
 
+  // Todo 관련
   loadTodosByDate = (date) => {
     const utcDate = toDate(date, { timeZone: 'UTC' });
     const formattedDate = format(utcDate, 'yyyy-MM-dd');
     call(`/todo/${formattedDate}`, "GET", null).then((response) =>
-      this.setState({ items: response.data, loading: false })
+      this.setState({ todoItems: response.data, loading: false })
     );
 
     call(`/todo`, "GET", null).then((response) => {
@@ -75,15 +103,44 @@ class App extends React.Component {
     });
   }
 
+  // Event 관련
+  loadEventsByDate = (date) => {
+    const utcDate = toDate(date, { timeZone: 'UTC' });
+    const formattedDate = format(utcDate, 'yyyy-MM-dd');
+    call(`/event/${formattedDate}`, "GET", null).then((response) =>
+      this.setState({ eventItems: response.data, loading: false })
+    );
+
+    call(`/event`, "GET", null).then((response) => {
+      const eventDates = response.data.map(event => {
+        const localDate = toZonedTime(event.date, 'UTC');
+        return format(localDate, 'yyyy-MM-dd');
+      });
+      this.setState({ eventDates });
+    });
+  }  
+
   render() {
-    const { date, items, loading, todoDates, activeStartDate } = this.state;
+    const { date, todoItems, eventItems, loading, todoDates, eventDates, activeStartDate } = this.state;
     const formattedDate = `${date.getFullYear()}년 ${String(date.getMonth() + 1).padStart(2, '0')}월 ${String(date.getDate()).padStart(2, '0')}일`;
 
-    const todoItems = items.length > 0 && (
+    // Todo 관련
+    const todoList = todoItems.length > 0 && (
       <Paper style={{ margin: 16 }}>
         <List>
-          {items.map((item, idx) => (
-            <Todo item={item} key={item.id} delete={this.delete} update={this.update} />
+          {todoItems.map((item, idx) => (
+            <Todo item={item} key={item.id} delete={this.deleteTodo} update={this.updateTodo} />
+          ))}
+        </List>
+      </Paper>
+    );
+
+    // Event 관련
+    const eventList = eventItems.length > 0 && (
+      <Paper style={{ margin: 16 }}>
+        <List>
+          {eventItems.map((item, idx) => (
+            <Event item={item} key={item.id} delete={this.deleteEvent} update={this.updateEvent} />
           ))}
         </List>
       </Paper>
@@ -104,6 +161,7 @@ class App extends React.Component {
       </AppBar>
     );
 
+    // Todo 관련
     const todoListPage = (
       <div>
         {navigationBar}
@@ -115,6 +173,7 @@ class App extends React.Component {
                   date={date} 
                   onDateChange={this.handleCalendarDateChange} 
                   todoDates={todoDates} 
+                  eventDates={eventDates} 
                   activeStartDate={activeStartDate} 
                 />
               </Grid>
@@ -128,8 +187,28 @@ class App extends React.Component {
                     <ArrowForward />
                   </IconButton>
                 </Box>
-                <AddTodo add={this.add} />
-                <div className='TodoList'>{todoItems}</div>
+                <AddTodo add={this.addTodo} />
+                <div className='TodoList'>{todoList}</div>
+              </Grid>
+            </Grid>
+          </Box>
+        </Container>
+      </div>
+    );
+
+    // Event 관련
+    const eventListPage = (
+      <div>
+        <Container maxWidth="md">
+          <Box mt={4}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={4}>
+
+              </Grid>
+              <Grid item xs={12} md={8}>
+
+                <AddEvent add={this.addEvent} />
+                <div className='EventList'>{eventList}</div>
               </Grid>
             </Grid>
           </Box>
@@ -138,11 +217,13 @@ class App extends React.Component {
     );
 
     const loadingPage = <h1>로딩중...</h1>
-    const content = loading ? loadingPage : todoListPage;
+    const contentTodo = loading ? loadingPage : todoListPage;
+    const contentEvent = loading ? loadingPage : eventListPage;
 
     return (
       <div className="App">
-        {content}
+        {contentTodo}
+        {contentEvent}
       </div>
     );
   }

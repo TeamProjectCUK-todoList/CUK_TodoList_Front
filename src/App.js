@@ -4,11 +4,11 @@ import AddTodo from './AddTodo';
 import Event from './Event';
 import AddEvent from './AddEvent';
 import MyCalendar from './components/Calendar';
-import { Paper, List, Container, Grid, Button, AppBar, Toolbar, Typography, Box, IconButton } from "@material-ui/core";
+import { Paper, List, Container, Grid, Button, AppBar, Toolbar, Typography, Box, IconButton, ListItem, ListItemText } from "@material-ui/core";
 import { ArrowBack, ArrowForward } from '@material-ui/icons';
 import './App.css';
 import { call, signout } from './service/ApiService';
-import { format, addDays, startOfMonth } from 'date-fns';
+import { format, addDays, startOfMonth, differenceInDays, startOfToday } from 'date-fns';
 import { toDate, toZonedTime } from 'date-fns-tz';
 
 class App extends React.Component {
@@ -21,6 +21,7 @@ class App extends React.Component {
       date: new Date(),
       todoDates: [],
       eventDates: [],
+      allEventItems: [],  // 모든 이벤트를 저장
       activeStartDate: startOfMonth(new Date())
     };
   }
@@ -48,19 +49,29 @@ class App extends React.Component {
     const utcDate = toDate(date, { timeZone: 'UTC' });
     const formattedDate = format(utcDate, 'yyyy-MM-dd');
     const newItem = { ...item, date: formattedDate };
-    call("/event", "POST", newItem).then(() => this.loadEventsByDate(date));
+    call("/event", "POST", newItem).then(() => {
+      this.loadEventsByDate(date);
+      this.loadEvents();
+    });
   }
 
   deleteEvent = (item) => {
-    call("/event", "DELETE", item).then(() => this.loadEventsByDate(this.state.date));
+    call("/event", "DELETE", item).then(() => {
+      this.loadEventsByDate(this.state.date);
+      this.loadEvents();
+    });
   }
 
   updateEvent = (item) => {
-    call("/event", "PUT", item).then(() => this.loadEventsByDate(this.state.date));
+    call("/event", "PUT", item).then(() => {
+      this.loadEventsByDate(this.state.date);
+      this.loadEvents();
+    });
   }
 
   componentDidMount() {
     this.loadTodosByDate(this.state.date);
+    this.loadEvents();
     this.loadEventsByDate(this.state.date);
   }
 
@@ -103,26 +114,47 @@ class App extends React.Component {
     });
   }
 
-  // Event 관련
+  // 특정 날짜의 이벤트 로드
   loadEventsByDate = (date) => {
     const utcDate = toDate(date, { timeZone: 'UTC' });
     const formattedDate = format(utcDate, 'yyyy-MM-dd');
     call(`/event/${formattedDate}`, "GET", null).then((response) =>
       this.setState({ eventItems: response.data, loading: false })
     );
+  }
 
+  // 모든 이벤트 로드
+  loadEvents = () => {
     call(`/event`, "GET", null).then((response) => {
+      this.setState({ allEventItems: response.data, loading: false });
       const eventDates = response.data.map(event => {
         const localDate = toZonedTime(event.date, 'UTC');
         return format(localDate, 'yyyy-MM-dd');
       });
       this.setState({ eventDates });
     });
-  }  
+  }
+
+  // Calculate D-day for events
+  calculateDDays = () => {
+    const { allEventItems } = this.state;
+    const today = startOfToday();
+    return allEventItems
+      .filter(event => event.done) // done이 true인 이벤트만 필터링
+      .map(event => {
+        const eventDate = new Date(event.date);
+        const dDay = differenceInDays(eventDate, today);
+        return { ...event, dDay };
+      })
+      .sort((a, b) => a.dDay - b.dDay); // D-day 기준으로 정렬
+  }
 
   render() {
     const { date, todoItems, eventItems, loading, todoDates, eventDates, activeStartDate } = this.state;
     const formattedDate = `${date.getFullYear()}년 ${String(date.getMonth() + 1).padStart(2, '0')}월 ${String(date.getDate()).padStart(2, '0')}일`;
+
+    // Calculate D-days for events
+    const dDayEvents = this.calculateDDays();
 
     // Todo 관련
     const todoList = todoItems.length > 0 && (
@@ -161,6 +193,19 @@ class App extends React.Component {
       </AppBar>
     );
 
+    // D-day list for events
+    const dDayList = dDayEvents.length > 0 && (
+      <Paper style={{ margin: 16 }}>
+        <List>
+          {dDayEvents.map((event, idx) => (
+            <ListItem key={event.id}>
+              <ListItemText primary={`${event.title}: D-${event.dDay}`} />
+            </ListItem>
+          ))}
+        </List>
+      </Paper>
+    );
+
     // Todo 관련
     const todoListPage = (
       <div>
@@ -176,6 +221,7 @@ class App extends React.Component {
                   eventDates={eventDates} 
                   activeStartDate={activeStartDate} 
                 />
+                {dDayList}
               </Grid>
               <Grid item xs={12} md={8}>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -203,10 +249,8 @@ class App extends React.Component {
           <Box mt={4}>
             <Grid container spacing={2}>
               <Grid item xs={12} md={4}>
-
               </Grid>
               <Grid item xs={12} md={8}>
-
                 <AddEvent add={this.addEvent} />
                 <div className='EventList'>{eventList}</div>
               </Grid>

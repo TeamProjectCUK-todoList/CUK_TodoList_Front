@@ -4,7 +4,7 @@ import AddTodo from './AddTodo';
 import Event from './Event';
 import AddEvent from './AddEvent';
 import MyCalendar from './components/Calendar';
-import { Paper, List, Container, Grid, Button, AppBar, Toolbar, Typography, Box, IconButton, ListItem, ListItemText } from "@material-ui/core";
+import { Paper, List, Container, Grid, Button, AppBar, Toolbar, Typography, Box, IconButton, ListItem, ListItemText, Divider } from "@material-ui/core";
 import { ArrowBack, ArrowForward } from '@material-ui/icons';
 import './App.css';
 import { call, signout } from './service/ApiService';
@@ -149,8 +149,9 @@ class App extends React.Component {
       .sort((a, b) => a.dDay - b.dDay); // D-day 기준으로 정렬
   }
 
+  ///렌더
   render() {
-    const { date, todoItems, eventItems, loading, todoDates, eventDates, activeStartDate } = this.state;
+    const { date, todoItems, eventItems, loading, activeStartDate } = this.state;
     const formattedDate = `${date.getFullYear()}년 ${String(date.getMonth() + 1).padStart(2, '0')}월 ${String(date.getDate()).padStart(2, '0')}일`;
 
     // Calculate D-days for events
@@ -158,24 +159,20 @@ class App extends React.Component {
 
     // Todo 관련
     const todoList = todoItems.length > 0 && (
-      <Paper style={{ margin: 16 }}>
-        <List>
-          {todoItems.map((item, idx) => (
-            <Todo item={item} key={item.id} delete={this.deleteTodo} update={this.updateTodo} />
-          ))}
-        </List>
-      </Paper>
+      <List>
+        {todoItems.map((item, idx) => (
+          <Todo item={item} key={item.id} delete={this.deleteTodo} update={this.updateTodo} />
+        ))}
+      </List>
     );
 
     // Event 관련
     const eventList = eventItems.length > 0 && (
-      <Paper style={{ margin: 16 }}>
-        <List>
-          {eventItems.map((item, idx) => (
-            <Event item={item} key={item.id} delete={this.deleteEvent} update={this.updateEvent} />
-          ))}
-        </List>
-      </Paper>
+      <List>
+        {eventItems.map((item, idx) => (
+          <Event item={item} key={item.id} delete={this.deleteEvent} update={this.updateEvent} />
+        ))}
+      </List>
     );
 
     const navigationBar = (
@@ -195,7 +192,7 @@ class App extends React.Component {
 
     // D-day list for events
     const dDayList = dDayEvents.length > 0 && (
-      <Paper style={{ margin: 16 }}>
+      <Paper style={{ margin: 16, width: '100%' }}>
         <List>
           {dDayEvents.map((event, idx) => (
             <ListItem key={event.id}>
@@ -206,25 +203,25 @@ class App extends React.Component {
       </Paper>
     );
 
-    // Todo 관련
-    const todoListPage = (
+    // Todo 및 Event 관련
+    const todoEventListPage = (
       <div>
         {navigationBar}
         <Container maxWidth="md">
           <Box mt={4}>
             <Grid container spacing={2}>
-              <Grid item xs={12} md={4}>
-                <MyCalendar 
-                  date={date} 
-                  onDateChange={this.handleCalendarDateChange} 
-                  todoDates={todoDates} 
-                  eventDates={eventDates} 
-                  activeStartDate={activeStartDate} 
-                />
-                {dDayList}
+              <Grid item xs={12} md={6}>
+                <Paper style={{ padding: 16, height: '100%' }}>
+                  <MyCalendar 
+                    date={date} 
+                    onDateChange={this.handleCalendarDateChange} 
+                    activeStartDate={activeStartDate} 
+                  />
+                  {dDayList}
+                </Paper>
               </Grid>
-              <Grid item xs={12} md={8}>
-                <Box display="flex" justifyContent="space-between" alignItems="center">
+              <Grid item xs={12} md={6}>
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                   <IconButton onClick={() => this.handleDateChange(-1)}>
                     <ArrowBack />
                   </IconButton>
@@ -233,26 +230,15 @@ class App extends React.Component {
                     <ArrowForward />
                   </IconButton>
                 </Box>
-                <AddTodo add={this.addTodo} />
-                <div className='TodoList'>{todoList}</div>
-              </Grid>
-            </Grid>
-          </Box>
-        </Container>
-      </div>
-    );
-
-    // Event 관련
-    const eventListPage = (
-      <div>
-        <Container maxWidth="md">
-          <Box mt={4}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={4}>
-              </Grid>
-              <Grid item xs={12} md={8}>
-                <AddEvent add={this.addEvent} />
-                <div className='EventList'>{eventList}</div>
+                <Paper style={{ padding: 16, marginBottom: 16 }}>
+                  <AddTodo add={this.addTodo} />
+                  {todoList}
+                </Paper>
+                <Divider style={{ margin: '16px 0' }} />
+                <Paper style={{ padding: 16 }}>
+                  <AddEvent add={this.addEvent} />
+                  {eventList}
+                </Paper>
               </Grid>
             </Grid>
           </Box>
@@ -261,16 +247,16 @@ class App extends React.Component {
     );
 
     const loadingPage = <h1>로딩중...</h1>
-    const contentTodo = loading ? loadingPage : todoListPage;
-    const contentEvent = loading ? loadingPage : eventListPage;
+    const contentTodoEvent = loading ? loadingPage : todoEventListPage;
 
     return (
       <div className="App">
-        {contentTodo}
-        {contentEvent}
+        {contentTodoEvent}
       </div>
     );
   }
+
+
 }
 
 export default App;

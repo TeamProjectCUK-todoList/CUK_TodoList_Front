@@ -19,14 +19,7 @@ export function call(api, method, request){
     if(request){
         options.body = JSON.stringify(request);
     }
-    // return fetch(options.url, options).then((response) =>
-    //     response.json().then((json) => {
-    //     if(!response.ok){
-    //         return Promise.reject(json);
-    //     }
-    //     return json;
-    //     })
-    // )
+
     return fetch(options.url, options)
     .then((response) => {
         return response.json().then((json) => {
@@ -53,7 +46,7 @@ export function call(api, method, request){
 }
 
 //로그인을 위한 API 서비스 메소드 singin
-export function signin(userDTO){
+export function signin(userDTO){    
     return call("/auth/signin","POST",userDTO)
     .then((response) => {
         if(response.token){
@@ -64,11 +57,11 @@ export function signin(userDTO){
         }
     })
     .catch((error) => {
-        console.log("Singin ERROR: " , error);
-        if(error.status === 403){
-            window.location.href = "/login";
-        }
-        return Promise.reject(error);
+        console.log("Singin ERROR: " , error);        
+        window.location.replace("/login");
+        alert("로그인 정보가 올바르지 않습니다.");
+        
+        return Promise.reject(error);    
     });
 }
 

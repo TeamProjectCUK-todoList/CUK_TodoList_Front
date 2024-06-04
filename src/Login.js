@@ -16,7 +16,11 @@ class Login extends React.Component{
         
         console.log("로그인");
         //ApiService의 singin 메소드를 사용해 로그인
-        signin({email:email,password: password});
+        //널 값 처리 
+        if((email === "")||(password ===""))
+            alert("아이디 및 비밀번호를 확인해주세요");
+        else
+            signin({email:email,password: password});
     }
 
     render() {

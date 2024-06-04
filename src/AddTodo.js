@@ -4,22 +4,31 @@ import { TextField, Paper, Button, Grid } from "@material-ui/core";
 class AddTodo extends React.Component{
     constructor(props){
         super(props);
-        this.state = {item :{title:""}};
+        this.state = {
+            item :{title:""},
+            isButtonDisabled: true, //널 값 처리  
+        };
         this.add = props.add;
     }
     onInputChange =(e)=>{
         const thisItem = this.state.item;
         thisItem.title = e.target.value;
-        this.setState({item:thisItem});
+        this.setState({
+            item:thisItem,
+            isButtonDisabled: e.target.value.trim() === "",//널 값 처리
+        });
     }
 
     onButtonClick =()=>{
         this.add(this.state.item);
-        this.setState({item:{title:""}});
+        this.setState({
+            item:{title:""}, 
+            isButtonDisabled: true,//널 값 처리
+        });
     }
 
     enterKeyEventHandler =(e)=>{
-        if(e.key === 'Enter'){
+        if(e.key === 'Enter' && !this.state.isButtonDisabled){//널 값 처리
             this.onButtonClick();
         }
     }
@@ -43,6 +52,7 @@ class AddTodo extends React.Component{
                         color="secondary"
                         variant="outlined"
                         onClick={this.onButtonClick}
+                        disabled={this.state.isButtonDisabled}//널 값 처리
                         >
                             +
                         </Button>

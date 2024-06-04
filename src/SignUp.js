@@ -1,12 +1,5 @@
 import React from "react";
-import {
-    Button,
-    TextField,
-    Link,
-    Grid,
-    Container,
-    Typography,
-} from "@material-ui/core";
+import {Button,TextField,Link,Grid,Container,Typography} from "@material-ui/core";
 
 import { signup } from "./service/ApiService";
 
@@ -22,12 +15,18 @@ class SignUp extends React.Component{
         const username = data.get("username");
         const email = data.get("email");
         const password = data.get("password");
-        signup({ email: email, username: username, password: password}).then(
-            (response) => {
-                window.location.href = "/login";
-
-            }
-        );
+        //널 값 처리
+        if((username === "")||(email === "")||(password === "")){
+            alert("올바른 값을 입력해주세요.");
+        }
+        else{
+            signup({ email: email, username: username, password: password}).then(
+                (response) => {
+                    window.location.href = "/login";
+    
+                }
+            );
+        }
     }
 
     render(){

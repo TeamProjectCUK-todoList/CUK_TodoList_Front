@@ -29,7 +29,7 @@ class AppRouter extends React.Component {
                     </Routes>
                 </div>
                 <div>
-                    <Box mt={5}>
+                    <Box mt={10}>
                         <Copyright />
                     </Box>
                 </div>

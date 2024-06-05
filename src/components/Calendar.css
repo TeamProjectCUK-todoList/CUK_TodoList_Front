@@ -42,8 +42,7 @@
   }
   
   .custom-calendar .react-calendar__tile--active {
-    background: none !important; /* 비어있는 사각형 */
-    border: 2px solid #3F51B5 !important; /* 파란색 테두리 */
+    background: #d3d5d8 !important; /* 파란색 */
     border-radius: 8px !important; /* 모서리가 둥근 정사각형 */
     color: black !important;
     width: 36px; /* 정사각형 유지 */
@@ -51,9 +50,9 @@
   }
   
   .custom-calendar .react-calendar__tile:hover {
-    background: #5565c3 !important; /* 마우스 오버 시 색상 */
+    background: #d3d5d8 !important; /* 파란색 */
     border-radius: 8px !important; /* 모서리가 둥근 정사각형 */
-    color: white !important;
+    color: black !important;
     width: 36px; /* 정사각형 유지 */
     height: 36px; /* 정사각형 유지 */
   }

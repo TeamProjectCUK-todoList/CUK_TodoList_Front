@@ -164,31 +164,31 @@ class App extends React.Component {
       .sort((a, b) => a.dDay - b.dDay); // D-day 기준으로 정렬
   }
 
-    render() {
-      const { date, todoItems, eventItems, loading, activeStartDate } = this.state;
-      const formattedDate = `${date.getFullYear()}년 ${String(date.getMonth() + 1).padStart(2, '0')}월 ${String(date.getDate()).padStart(2, '0')}일`;
-
-      // Calculate D-days for events
-      const dDayEvents = this.calculateDDays();
-
-      // Todo 관련
-      const todoList = todoItems.length > 0 && (
-        <List>
-          {todoItems.map((item, idx) => (
-            <Todo item={item} key={item.id} delete={this.deleteTodo} update={this.updateTodo} />
-          ))}
-        </List>
-      );
-
-      // Event 관련
-      const eventList = eventItems.length > 0 && (
-        <List>
-          {eventItems.map((item, idx) => (
-            <Event item={item} key={item.id} delete={this.deleteEvent} update={this.updateEvent} />
-          ))}
-        </List>
-      );
-
+  render() {
+    const { date, todoItems, eventItems, loading, activeStartDate } = this.state;
+    const formattedDate = `${date.getFullYear()}년 ${String(date.getMonth() + 1).padStart(2, '0')}월 ${String(date.getDate()).padStart(2, '0')}일`;
+  
+    // Calculate D-days for events
+    const dDayEvents = this.calculateDDays();
+  
+    // Todo 관련
+    const todoList = todoItems.length > 0 && (
+      <List>
+        {todoItems.map((item, idx) => (
+          <Todo item={item} key={item.id} delete={this.deleteTodo} update={this.updateTodo} />
+        ))}
+      </List>
+    );
+  
+    // Event 관련
+    const eventList = eventItems.length > 0 && (
+      <List>
+        {eventItems.map((item, idx) => (
+          <Event item={item} key={item.id} delete={this.deleteEvent} update={this.updateEvent} />
+        ))}
+      </List>
+    );
+  
     const navigationBar = (
       <AppBar position='static'>
         <Toolbar>
@@ -203,7 +203,7 @@ class App extends React.Component {
         </Toolbar>
       </AppBar>
     );
-
+  
     // D-day list for events
     const dDayList = dDayEvents.length > 0 && (
       <Paper style={{ margin: 16, width: '100%' }}>
@@ -216,7 +216,7 @@ class App extends React.Component {
         </List>
       </Paper>
     );
-
+  
     const todoEventListPage = (
       <div>
         {navigationBar}
@@ -256,10 +256,10 @@ class App extends React.Component {
         </Container>
       </div>
     );
-
+  
     const loadingPage = <h1>로딩중...</h1>
     const contentTodoEvent = loading ? loadingPage : todoEventListPage;
-
+  
     return (
       <div className="App">
         <ErrorBoundary>
@@ -267,8 +267,9 @@ class App extends React.Component {
         </ErrorBoundary>
       </div>
     );
-
   }
+  
+  
 }
 
 export default App;

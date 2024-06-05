@@ -1,37 +1,41 @@
 import React from "react";
-import {Button,TextField,Link,Grid,Container,Typography} from "@material-ui/core";
-
+import { Button, TextField, Link, Grid, Container, Typography } from "@material-ui/core";
 import { signup } from "./service/ApiService";
 
-class SignUp extends React.Component{
-    constructor(props){
+class SignUp extends React.Component {
+    constructor(props) {
         super(props);
+        this.state = {
+            error: ''
+        };
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleSubmit(event){
+    handleSubmit(event) {
         event.preventDefault();
         const data = new FormData(event.target);
         const username = data.get("username");
         const email = data.get("email");
         const password = data.get("password");
-        //널 값 처리
-        if((username === "")||(email === "")||(password === "")){
+
+        // 널 값 처리
+        if ((username === "") || (email === "") || (password === "")) {
             alert("올바른 값을 입력해주세요.");
-        }
-        else{
-            signup({ email: email, username: username, password: password}).then(
-                (response) => {
+        } else {
+            signup({ email: email, username: username, password: password })
+                .then((response) => {
                     window.location.href = "/login";
-    
-                }
-            );
+                })
+                .catch((error) => {
+                    console.error("SignUp ERROR:", error);
+                    this.setState({ error: '회원 가입 중 오류가 발생했습니다.' });
+                });
         }
     }
 
-    render(){
+    render() {
         return (
-            <Container component="main" maxWidth="xs" style={{marginTop: "8%"}}>
+            <Container component="main" maxWidth="xs" style={{ marginTop: "8%" }}>
                 <form noValidate onSubmit={this.handleSubmit}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
@@ -60,7 +64,6 @@ class SignUp extends React.Component{
                                 fullWidth
                                 id="email"
                                 label="이메일 주소"
-                                autoFocus
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -72,16 +75,25 @@ class SignUp extends React.Component{
                                 fullWidth
                                 id="password"
                                 label="패스워드"
-                                autoFocus
+                                type="password"
                             />
                         </Grid>
+                        {this.state.error && (
+                            <Grid item xs={12}>
+                                <Typography color="error" variant="body2">
+                                    {this.state.error}
+                                </Typography>
+                            </Grid>
+                        )}
                         <Grid item xs={12}>
                             <Button
                                 type="submit"
                                 fullWidth
-                                variant = "contained"
+                                variant="contained"
                                 color="primary"
-                            >계정생성</Button>
+                            >
+                                계정 생성
+                            </Button>
                         </Grid>
                     </Grid>
                     <Grid container justifyContent="flex-end">
@@ -97,4 +109,4 @@ class SignUp extends React.Component{
     }
 }
 
-export default SignUp
+export default SignUp;

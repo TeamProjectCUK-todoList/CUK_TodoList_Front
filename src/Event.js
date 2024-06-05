@@ -1,8 +1,8 @@
 import React from "react";
-import { ListItem, ListItemText, InputBase, Checkbox, ListItemSecondaryAction, IconButton } from "@material-ui/core";
+import { ListItem, ListItemText, InputBase, Switch, ListItemSecondaryAction, IconButton } from "@material-ui/core";
 import DeleteOutlined from "@material-ui/icons/DeleteOutlined";
 
-class Todo extends React.Component {
+class Event extends React.Component {
   constructor(props) {
     super(props);
     this.state = { item: props.item, readOnly: true };  // 매개변수 item의 변수/값을 item에 대입
@@ -33,7 +33,7 @@ class Todo extends React.Component {
     this.setState({ item: thisItem });
   }
 
-  checkboxEventHandler = (e) => {
+  switchEventHandler = (e) => {
     const thisItem = this.state.item;
     thisItem.done = !thisItem.done;
     this.setState({ readOnly: true });
@@ -44,9 +44,9 @@ class Todo extends React.Component {
     const item = this.state.item;
     return (
       <ListItem>
-        <Checkbox
+        <Switch
           checked={item.done}
-          onChange={this.checkboxEventHandler}
+          onChange={this.switchEventHandler}
         />
         <ListItemText>
           <InputBase
@@ -60,7 +60,6 @@ class Todo extends React.Component {
             onClick={this.offReadOnlyMode}
             onChange={this.editEventHandler}
             onKeyPress={this.enterKeyEventHandler}
-            style={{ textDecoration: item.done ? 'line-through' : 'none' }} // 줄 긋기 스타일 추가
           />
         </ListItemText>
 
@@ -75,4 +74,4 @@ class Todo extends React.Component {
   }
 }
 
-export default Todo;
+export default Event;

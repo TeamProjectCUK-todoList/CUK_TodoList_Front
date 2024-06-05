@@ -1,7 +1,7 @@
 import React from "react";
 import { TextField, Button, Box } from "@material-ui/core";
 
-class AddTodo extends React.Component {
+class AddEvent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -39,7 +39,7 @@ class AddTodo extends React.Component {
             <Box display="flex" justifyContent="center" margin={2}>
                 <Box display="flex" alignItems="center" style={{ width: '100%', maxWidth: 600 }}>
                     <TextField
-                        placeholder="Add Todo here"
+                        placeholder="Add Event here"
                         onChange={this.onInputChange}
                         value={this.state.item.title}
                         onKeyPress={this.enterKeyEventHandler}
@@ -59,7 +59,7 @@ class AddTodo extends React.Component {
     }
 }
 
-export default AddTodo;
+export default AddEvent;
 
 
 

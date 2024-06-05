@@ -164,30 +164,30 @@ class App extends React.Component {
       .sort((a, b) => a.dDay - b.dDay); // D-day 기준으로 정렬
   }
 
-  render() {
-    const { date, todoItems, eventItems, loading, activeStartDate } = this.state;
-    const formattedDate = `${date.getFullYear()}년 ${String(date.getMonth() + 1).padStart(2, '0')}월 ${String(date.getDate()).padStart(2, '0')}일`;
+    render() {
+      const { date, todoItems, eventItems, loading, activeStartDate } = this.state;
+      const formattedDate = `${date.getFullYear()}년 ${String(date.getMonth() + 1).padStart(2, '0')}월 ${String(date.getDate()).padStart(2, '0')}일`;
 
-    // Calculate D-days for events
-    const dDayEvents = this.calculateDDays();
+      // Calculate D-days for events
+      const dDayEvents = this.calculateDDays();
 
-    // Todo 관련
-    const todoList = todoItems.length > 0 && (
-      <List>
-        {todoItems.map((item, idx) => (
-          <Todo item={item} key={item.id} delete={this.deleteTodo} update={this.updateTodo} />
-        ))}
-      </List>
-    );
+      // Todo 관련
+      const todoList = todoItems.length > 0 && (
+        <List>
+          {todoItems.map((item, idx) => (
+            <Todo item={item} key={item.id} delete={this.deleteTodo} update={this.updateTodo} />
+          ))}
+        </List>
+      );
 
-    // Event 관련
-    const eventList = eventItems.length > 0 && (
-      <List>
-        {eventItems.map((item, idx) => (
-          <Event item={item} key={item.id} delete={this.deleteEvent} update={this.updateEvent} />
-        ))}
-      </List>
-    );
+      // Event 관련
+      const eventList = eventItems.length > 0 && (
+        <List>
+          {eventItems.map((item, idx) => (
+            <Event item={item} key={item.id} delete={this.deleteEvent} update={this.updateEvent} />
+          ))}
+        </List>
+      );
 
     const navigationBar = (
       <AppBar position='static'>
@@ -217,7 +217,6 @@ class App extends React.Component {
       </Paper>
     );
 
-    // Todo 및 Event 관련
     const todoEventListPage = (
       <div>
         {navigationBar}
@@ -225,7 +224,7 @@ class App extends React.Component {
           <Box mt={4}>
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
-                <Paper style={{ padding: 16, height: '100%' }}>
+                <Paper style={{ padding: 16, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <MyCalendar 
                     date={date} 
                     onDateChange={this.handleCalendarDateChange} 
@@ -235,11 +234,11 @@ class App extends React.Component {
                 </Paper>
               </Grid>
               <Grid item xs={12} md={6}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
                   <IconButton onClick={() => this.handleDateChange(-1)}>
                     <ArrowBack />
                   </IconButton>
-                  <Typography variant="h6">{formattedDate}</Typography>
+                  <Typography variant="h6" style={{ margin: '0 16px', whiteSpace: 'nowrap' }}>{formattedDate}</Typography>
                   <IconButton onClick={() => this.handleDateChange(1)}>
                     <ArrowForward />
                   </IconButton>
@@ -247,9 +246,7 @@ class App extends React.Component {
                 <Paper style={{ padding: 16, marginBottom: 16 }}>
                   <AddTodo add={this.addTodo} />
                   {todoList}
-                </Paper>
-                <Divider style={{ margin: '16px 0' }} />
-                <Paper style={{ padding: 16 }}>
+                  <Divider style={{ margin: '16px 0' }} />
                   <AddEvent add={this.addEvent} />
                   {eventList}
                 </Paper>
@@ -270,6 +267,7 @@ class App extends React.Component {
         </ErrorBoundary>
       </div>
     );
+
   }
 }
 

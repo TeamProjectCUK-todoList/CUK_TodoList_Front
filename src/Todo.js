@@ -1,11 +1,11 @@
 import React from "react";
 import { ListItem, ListItemText, InputBase, Checkbox, ListItemSecondaryAction, IconButton } from "@material-ui/core";
-import DeleteOutlined from "@material-ui/icons/DeleteOutlined";
+import CloseIcon from "@material-ui/icons/Close";
 
 class Todo extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { item: props.item, readOnly: true };  // 매개변수 item의 변수/값을 item에 대입
+    this.state = { item: props.item, readOnly: true };
     this.delete = props.delete;
     this.update = props.update;
   }
@@ -15,14 +15,12 @@ class Todo extends React.Component {
   }
 
   offReadOnlyMode = () => {
-    this.setState({ readOnly: false }, () => {
-      console.log("ReadOnly?", this.state.readOnly)
-    });
+    this.setState({ readOnly: false });
   }
 
   enterKeyEventHandler = (e) => {
     if (e.key === "Enter") {
-      this.setState({ readOnly: true })
+      this.setState({ readOnly: true });
       this.update(this.state.item);
     }
   }
@@ -60,14 +58,13 @@ class Todo extends React.Component {
             onClick={this.offReadOnlyMode}
             onChange={this.editEventHandler}
             onKeyPress={this.enterKeyEventHandler}
-            style={{ textDecoration: item.done ? 'line-through' : 'none' }} // 줄 긋기 스타일 추가
+            style={{ textDecoration: item.done ? 'line-through' : 'none' }}
           />
         </ListItemText>
 
         <ListItemSecondaryAction>
-          <IconButton aria-label="Delete"
-            onClick={this.deleteEventHandler}>
-            <DeleteOutlined />
+          <IconButton aria-label="delete" onClick={this.deleteEventHandler}>
+            <CloseIcon />
           </IconButton>
         </ListItemSecondaryAction>
       </ListItem>

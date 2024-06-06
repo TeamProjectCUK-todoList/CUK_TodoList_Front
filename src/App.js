@@ -4,13 +4,16 @@ import AddTodo from './AddTodo';
 import Event from './Event';
 import AddEvent from './AddEvent';
 import MyCalendar from './components/Calendar';
-import { Paper, List, Container, Grid, Button, AppBar, Toolbar, Typography, Box, IconButton, ListItem, ListItemText, Divider } from "@material-ui/core";
-import { ArrowBack, ArrowForward } from '@material-ui/icons';
+import { Paper, List, Container, Grid, AppBar, Toolbar, Typography, Box, Button, IconButton, ListItem, ListItemText, Divider, Tooltip } from "@material-ui/core";
+import { ArrowBack, ArrowForward, Delete as DeleteIcon } from '@material-ui/icons';
 import './App.css';
 import { call, signout } from './service/ApiService';
 import { format, addDays, startOfMonth, differenceInDays, startOfToday } from 'date-fns';
 import { toDate, toZonedTime } from 'date-fns-tz';
 import ErrorBoundary from './ErrorBoundary';
+import DDayIcon from './images/d_day_icon.png'; // D-Day 아이콘
+import TodoIcon from './images/todo_icon.png'; // To-do 아이콘
+import EventIcon from './images/event_icon.png'; // Event 아이콘
 
 class App extends React.Component {
   constructor(props) {
@@ -48,6 +51,15 @@ class App extends React.Component {
       .catch((error) => console.error("Failed to update todo:", error));
   }
 
+  deleteTodosByDate = () => {
+    const { date } = this.state;
+    const utcDate = toDate(date, { timeZone: 'UTC' });
+    const formattedDate = format(utcDate, 'yyyy-MM-dd');
+    call(`/todo/date/${formattedDate}`, "DELETE", null)
+      .then(() => this.loadTodosByDate(date))
+      .catch((error) => console.error("Failed to delete todos by date:", error));
+  }
+
   // Event 관련  
   addEvent = (item) => {
     const { date } = this.state;
@@ -78,6 +90,18 @@ class App extends React.Component {
         this.loadEvents();
       })
       .catch((error) => console.error("Failed to update event:", error));
+  }
+
+  deleteEventsByDate = () => {
+    const { date } = this.state;
+    const utcDate = toDate(date, { timeZone: 'UTC' });
+    const formattedDate = format(utcDate, 'yyyy-MM-dd');
+    call(`/event/date/${formattedDate}`, "DELETE", null)
+      .then(() => {
+        this.loadEventsByDate(date);
+        this.loadEvents();
+      })
+      .catch((error) => console.error("Failed to delete events by date:", error));
   }
 
   componentDidMount() {
@@ -159,14 +183,19 @@ class App extends React.Component {
       .map(event => {
         const eventDate = new Date(event.date);
         const dDay = differenceInDays(eventDate, today);
-        return { ...event, dDay };
+        return { ...event, dDay: dDay === 0 ? 'DAY' : dDay }; // 0일일 때 "DAY"로 표시
       })
-      .sort((a, b) => a.dDay - b.dDay); // D-day 기준으로 정렬
+      .sort((a, b) => a.dDay - b.dDay || (a.dDay === 'DAY' ? -1 : 1)); // D-day 기준으로 정렬
   }
 
   render() {
     const { date, todoItems, eventItems, loading, activeStartDate } = this.state;
     const formattedDate = `${date.getFullYear()}년 ${String(date.getMonth() + 1).padStart(2, '0')}월 ${String(date.getDate()).padStart(2, '0')}일`;
+
+    const totalTodos = todoItems.length;
+    const doneTodos = todoItems.filter(item => item.done).length;
+
+    const totalEvents = eventItems.length;
   
     // Calculate D-days for events
     const dDayEvents = this.calculateDDays();
@@ -206,7 +235,13 @@ class App extends React.Component {
   
     // D-day list for events
     const dDayList = dDayEvents.length > 0 && (
-      <Paper style={{ margin: 16, width: '100%' }}>
+      
+      <Box style={{ margin: 16, width: '100%' }}>
+        <Divider style={{ margin: '5px 0' }} />
+        <Box className="section-title" style={{ margin: 5}}>
+          <img src={DDayIcon} alt="icon" className="icon" />
+          <Typography variant="h6" className="section-title-text">D-DAY</Typography>
+        </Box>
         <List>
           {dDayEvents.map((event, idx) => (
             <ListItem key={event.id}>
@@ -214,7 +249,7 @@ class App extends React.Component {
             </ListItem>
           ))}
         </List>
-      </Paper>
+      </Box>
     );
   
     const todoEventListPage = (
@@ -223,32 +258,91 @@ class App extends React.Component {
         <Container maxWidth="md">
           <Box mt={4}>
             <Grid container spacing={2}>
+             {/* 캘린더 */} 
               <Grid item xs={12} md={6}>
-                <Paper style={{ padding: 16, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Paper style={{ padding: 16, minHeight: '817px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <MyCalendar 
                     date={date} 
                     onDateChange={this.handleCalendarDateChange} 
                     activeStartDate={activeStartDate} 
                   />
+              
+                {/* D-Day 리스트 */}                  
                   {dDayList}
                 </Paper>
               </Grid>
+
               <Grid item xs={12} md={6}>
-                <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
-                  <IconButton onClick={() => this.handleDateChange(-1)}>
-                    <ArrowBack />
-                  </IconButton>
-                  <Typography variant="h6" style={{ margin: '0 16px', whiteSpace: 'nowrap' }}>{formattedDate}</Typography>
-                  <IconButton onClick={() => this.handleDateChange(1)}>
-                    <ArrowForward />
-                  </IconButton>
-                </Box>
-                <Paper style={{ padding: 16, marginBottom: 16 }}>
+                <Paper style={{ padding: 16, marginBottom: 16, height: 'auto', overflowY: 'auto', position: 'relative' }}>
+                {/* 현재 날짜 */}
+                  <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
+                    <IconButton onClick={() => this.handleDateChange(-1)}>
+                      <ArrowBack />
+                    </IconButton>
+                    <Typography variant="h6" style={{ margin: '0 16px', whiteSpace: 'nowrap' }}>{formattedDate}</Typography>
+                    <IconButton onClick={() => this.handleDateChange(1)}>
+                      <ArrowForward />
+                    </IconButton>
+                  </Box>
+                  <Box className="section-title">
+                    <img src={TodoIcon} alt="icon" className="icon" />
+                    <Typography variant="h6" className="section-title-text">TO-DO</Typography>
+                  </Box>
                   <AddTodo add={this.addTodo} />
-                  {todoList}
-                  <Divider style={{ margin: '16px 0' }} />
+                {/* To-do 리스트 */}
+                  <Box style={{ minHeight: '280px', overflowY: 'auto' }}>
+                    {todoList}
+                  </Box>
+
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                  {/* To-do 진행 상황*/}
+                    <Box ml="25px"> 
+                      <Typography variant="body2" className="status-text">
+                        Total: {totalTodos} Done: {doneTodos}
+                      </Typography>
+                    </Box>
+                  {/* To-do 전체 삭제 */}
+                    <Box mr="15px"> 
+                      <Tooltip title="Delete All">
+                        <IconButton
+                          className="expandable-button"
+                          onClick={this.deleteTodosByDate}
+                        >
+                          <DeleteIcon style={{ color: '#808080' }} />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  </Box>
+                {/* 구분선 */}
+                  <Divider style={{ margin: '5px 0' }} />
+                  <Box className="section-title">
+                    <img src={EventIcon} alt="icon" className="icon" />
+                    <Typography variant="h6" className="section-title-text">EVENT</Typography>
+                  </Box>
                   <AddEvent add={this.addEvent} />
-                  {eventList}
+                {/* Event 리스트 */}
+                  <Box style={{ minHeight: '150px', overflowY: 'auto' }}>
+                    {eventList}
+                  </Box>
+                {/* Event 리스트 갯수 */}
+                  <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Box ml="25px"> 
+                      <Typography variant="body2" className="status-text">
+                        Total: {totalEvents}
+                      </Typography>
+                    </Box>
+                  {/* Event 전체 삭제 */}
+                    <Box mr="15px"> 
+                      <Tooltip title="Delete All">
+                        <IconButton
+                          className="expandable-button"
+                          onClick={this.deleteEventsByDate}
+                        >
+                          <DeleteIcon style={{ color: '#808080' }} />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  </Box>
                 </Paper>
               </Grid>
             </Grid>
@@ -268,8 +362,6 @@ class App extends React.Component {
       </div>
     );
   }
-  
-  
 }
 
 export default App;

@@ -235,7 +235,7 @@ class App extends React.Component {
               </Grid>
               <Grid item xs={12} md={6}>
 
-                <Paper style={{ padding: 16, marginBottom: 16 }}>
+              <Paper style={{ padding: 16, marginBottom: 16, height: 'auto', overflowY: 'auto' }}> {/* 여기를 수정 */}
                   <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
                     <IconButton onClick={() => this.handleDateChange(-1)}>
                       <ArrowBack />
@@ -246,10 +246,14 @@ class App extends React.Component {
                     </IconButton>
                   </Box>
                   <AddTodo add={this.addTodo} />
-                  {todoList}
-                  <Divider style={{ margin: '16px 0' }} />
+                  <Box style={{ marginBottom: 45, height: '300px', overflowY: 'auto' }}>
+                    {todoList}
+                  </Box>
+                  <Divider style={{ margin: '5px 0' }} />
                   <AddEvent add={this.addEvent} />
-                  {eventList}
+                  <Box style={{ marginBottom: 45, height: '240px', overflowY: 'auto' }}>
+                    {eventList}
+                  </Box>
                 </Paper>
               </Grid>
             </Grid>

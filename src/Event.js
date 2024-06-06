@@ -1,11 +1,11 @@
 import React from "react";
-import { ListItem, ListItemText, InputBase, Switch, ListItemSecondaryAction, IconButton } from "@material-ui/core";
-import DeleteOutlined from "@material-ui/icons/DeleteOutlined";
+import { ListItem, ListItemText, InputBase, Checkbox, ListItemSecondaryAction, IconButton } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
 
 class Event extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { item: props.item, readOnly: true };  // 매개변수 item의 변수/값을 item에 대입
+    this.state = { item: props.item, readOnly: true };
     this.delete = props.delete;
     this.update = props.update;
   }
@@ -15,14 +15,12 @@ class Event extends React.Component {
   }
 
   offReadOnlyMode = () => {
-    this.setState({ readOnly: false }, () => {
-      console.log("ReadOnly?", this.state.readOnly)
-    });
+    this.setState({ readOnly: false });
   }
 
   enterKeyEventHandler = (e) => {
     if (e.key === "Enter") {
-      this.setState({ readOnly: true })
+      this.setState({ readOnly: true });
       this.update(this.state.item);
     }
   }
@@ -33,7 +31,7 @@ class Event extends React.Component {
     this.setState({ item: thisItem });
   }
 
-  switchEventHandler = (e) => {
+  checkboxEventHandler = (e) => {
     const thisItem = this.state.item;
     thisItem.done = !thisItem.done;
     this.setState({ readOnly: true });
@@ -44,9 +42,9 @@ class Event extends React.Component {
     const item = this.state.item;
     return (
       <ListItem>
-        <Switch
+        <Checkbox
           checked={item.done}
-          onChange={this.switchEventHandler}
+          onChange={this.checkboxEventHandler}
         />
         <ListItemText>
           <InputBase
@@ -64,9 +62,8 @@ class Event extends React.Component {
         </ListItemText>
 
         <ListItemSecondaryAction>
-          <IconButton aria-label="Delete"
-            onClick={this.deleteEventHandler}>
-            <DeleteOutlined />
+          <IconButton aria-label="delete" onClick={this.deleteEventHandler}>
+            <CloseIcon />
           </IconButton>
         </ListItemSecondaryAction>
       </ListItem>

@@ -234,16 +234,17 @@ class App extends React.Component {
                 </Paper>
               </Grid>
               <Grid item xs={12} md={6}>
-                <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
-                  <IconButton onClick={() => this.handleDateChange(-1)}>
-                    <ArrowBack />
-                  </IconButton>
-                  <Typography variant="h6" style={{ margin: '0 16px', whiteSpace: 'nowrap' }}>{formattedDate}</Typography>
-                  <IconButton onClick={() => this.handleDateChange(1)}>
-                    <ArrowForward />
-                  </IconButton>
-                </Box>
+
                 <Paper style={{ padding: 16, marginBottom: 16 }}>
+                  <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
+                    <IconButton onClick={() => this.handleDateChange(-1)}>
+                      <ArrowBack />
+                    </IconButton>
+                    <Typography variant="h6" style={{ margin: '0 16px', whiteSpace: 'nowrap' }}>{formattedDate}</Typography>
+                    <IconButton onClick={() => this.handleDateChange(1)}>
+                      <ArrowForward />
+                    </IconButton>
+                  </Box>
                   <AddTodo add={this.addTodo} />
                   {todoList}
                   <Divider style={{ margin: '16px 0' }} />

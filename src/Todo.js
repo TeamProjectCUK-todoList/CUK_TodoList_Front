@@ -1,6 +1,22 @@
 import React from "react";
-import { ListItem, ListItemText, InputBase, Checkbox, ListItemSecondaryAction, IconButton } from "@material-ui/core";
+import { ListItem, ListItemText, InputBase, Checkbox, ListItemSecondaryAction, IconButton, withStyles } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
+
+// Custom styled Checkbox
+const CustomCheckbox = withStyles({
+  root: {
+    color: 'rgb(117, 117, 117)', // 기본 상태 테두리 색상
+    '&:hover': {
+      backgroundColor: '#e5e7f6fb', // 마우스 커서가 체크박스 위에 위치했을 때
+    },
+  },
+  checked: {
+    color: '#3f51b5 !important', // 체크된 상태의 테두리 색상
+  },
+  indeterminate: {
+    color: '#3f51b5',
+  },
+})((props) => <Checkbox color="default" {...props} />);
 
 class Todo extends React.Component {
   constructor(props) {
@@ -42,7 +58,7 @@ class Todo extends React.Component {
     const item = this.state.item;
     return (
       <ListItem>
-        <Checkbox
+        <CustomCheckbox
           checked={item.done}
           onChange={this.checkboxEventHandler}
         />

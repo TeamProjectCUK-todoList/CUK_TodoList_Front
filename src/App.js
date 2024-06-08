@@ -107,7 +107,7 @@ class App extends React.Component {
   componentDidMount() {
     this.loadTodosByDate(this.state.date);
     this.loadEvents();
-    this.loadEventsByDate(this.state.date);
+    this.loadEventsByDate(this.state.date);  
   }
 
   handleDateChange = (days) => {
@@ -235,13 +235,7 @@ class App extends React.Component {
   
     // D-day list for events
     const dDayList = dDayEvents.length > 0 && (
-      
       <Box style={{ margin: 16, width: '100%' }}>
-        <Divider style={{ margin: '5px 0' }} />
-        <Box className="section-title" style={{ margin: 5}}>
-          <img src={DDayIcon} alt="icon" className="icon" />
-          <Typography variant="h6" className="section-title-text">D-DAY</Typography>
-        </Box>
         <List>
           {dDayEvents.map((event, idx) => (
             <ListItem key={event.id}>
@@ -266,7 +260,12 @@ class App extends React.Component {
                     onDateChange={this.handleCalendarDateChange} 
                     activeStartDate={activeStartDate} 
                   />
-              
+                  
+                  <Box className="section-title" style={{ margin: 5}}>
+                    <Typography variant="h6" className="section-title-text">D-DAY</Typography>
+                    <img src={DDayIcon} alt="icon" className="icon" />
+                  </Box>
+                  <Divider style={{ margin: '5px 0', width: '100%' }} />
                 {/* D-Day 리스트 */}                  
                   {dDayList}
                 </Paper>
@@ -285,8 +284,9 @@ class App extends React.Component {
                     </IconButton>
                   </Box>
                   <Box className="section-title">
-                    <img src={TodoIcon} alt="icon" className="icon" />
+                    
                     <Typography variant="h6" className="section-title-text">TO-DO</Typography>
+                    <img src={TodoIcon} alt="icon" className="icon" />
                   </Box>
                   <AddTodo add={this.addTodo} />
                 {/* To-do 리스트 */}
@@ -316,8 +316,9 @@ class App extends React.Component {
                 {/* 구분선 */}
                   <Divider style={{ margin: '5px 0' }} />
                   <Box className="section-title">
-                    <img src={EventIcon} alt="icon" className="icon" />
+                    
                     <Typography variant="h6" className="section-title-text">EVENT</Typography>
+                    <img src={EventIcon} alt="icon" className="icon" />
                   </Box>
                   <AddEvent add={this.addEvent} />
                 {/* Event 리스트 */}
@@ -365,3 +366,6 @@ class App extends React.Component {
 }
 
 export default App;
+
+
+

@@ -6,7 +6,7 @@ import AddEvent from './AddEvent';
 import MyCalendar from './components/Calendar';
 import DigitalClock from './components/DigitalClock'; // 추가된 부분
 import Weather from './components/Weather'; // 추가된 부분
-import { Paper, List, Container, Grid, AppBar, Toolbar, Typography, Box, Button, IconButton, ListItem, ListItemText, Divider, Tooltip } from "@material-ui/core";
+import { Paper, List, Container, Grid, Typography, Box, Button, IconButton, ListItem, ListItemText, Divider, Tooltip } from "@material-ui/core";
 import { ArrowBack, ArrowForward, Delete as DeleteIcon } from '@material-ui/icons';
 import './App.css';
 import { call, signout } from './service/ApiService';
@@ -258,19 +258,12 @@ class App extends React.Component {
       </List>
     );
 
-    const navigationBar = (
-      <AppBar position='static'>
-        <Toolbar>
-          <Grid justify="space-between" container>
-            <Grid item>
-              <Typography variant='h6'>오늘의 할일</Typography>
-            </Grid>
-            <Grid item>
-              <Button color="inherit" onClick={signout}>logout</Button>
-            </Grid>
-          </Grid>
-        </Toolbar>
-      </AppBar>
+    // Text and Button without AppBar
+    const topBar = (
+      <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
+        <Typography variant='h6'>오늘의 할일</Typography>
+        <Button color="inherit" onClick={signout}>logout</Button>
+      </Box>
     );
 
     // D-day list for events
@@ -288,7 +281,7 @@ class App extends React.Component {
 
     const todoEventListPage = (
       <div>
-        {navigationBar}
+        {topBar}
         <Container maxWidth="md">
           <Box mt={4}>
             <Grid container spacing={2}>

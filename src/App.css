@@ -1,5 +1,15 @@
+:root {
+  --primary-color: #cfae7f;
+  --secondary-color: #808080;
+  --background-color: #EAE7DC;
+  --button-disabled-bg: #fff;
+  --button-hover-bg: #d8c3a5;
+  --hover-border-color: #e98074;
+  --logout-button-color: #fff;
+}
+
 body, html, #root {
-  background-color: #F0F2F5;
+  background-color: var(--background-color);
   height: 100%;
   margin: 0;
 }
@@ -53,12 +63,12 @@ body, html, #root {
 
 .expandable-button {
   padding: 8px;
-  border-radius: 10px; /* 사각형 테두리 */
+  border-radius: 10px;
   transition: margin-left 0.3s;
 }
 
 .expandable-button:hover {
-  border-radius: 5px; /* 사각형 테두리 */
+  border-radius: 5px;
 }
 
 .section-title {
@@ -70,55 +80,73 @@ body, html, #root {
 }
 
 .section-title img {
-  margin-left: 8px; /* 아이콘을 오른쪽으로 이동 */
+  margin-left: 8px;
   margin-right: 10px;
-  width: 24px; /* 아이콘 크기 조정 */
-  height: 24px; /* 아이콘 크기 조정 */
+  width: 24px;
+  height: 24px;
 }
 
 .section-title h6 {
-  font-size: 1.5rem; /* 제목 글자 크기 */
-  font-weight: bold; /* 글자 굵기 */
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 
 .status-text {
-  color: #808080;
+  color: var(--secondary-color);
   font-weight: bold;
   font-size: 1rem;
 }
 
 /* Button Styles */
 .button-disabled {
-  border-color: #808080 !important;
-  color: #808080 !important;
-  background-color: #fff !important;
+  border-color: var(--secondary-color) !important;
+  color: var(--secondary-color) !important;
+  background-color: var(--button-disabled-bg) !important;
 }
 
 .button-enabled {
-  border-color: #3f51b5 !important;
-  color: #3f51b5 !important;
-  background-color: #fff !important;
+  border-color: var(--button-hover-bg) !important;
+  color: var(--logout-button-color) !important;
+  background-color: var(--button-hover-bg) !important;
 }
 
 .button-hovered {
-  border-color: #3f51b5 !important;
-  color: #3f51b5 !important;
-  background-color: #F1F2FA !important;
+  border-color: var(--primary-color) !important;
+  color: var(--logout-button-color) !important;
+  background-color: var(--primary-color) !important;
+}
+
+.button-enabled:hover {
+  border-color: var(--hover-border-color) !important;
+  color: var(--logout-button-color) !important;
 }
 
 /* Custom Checkbox Styles */
 .custom-checkbox-root {
-  color: rgb(117, 117, 117); /* 기본 상태 테두리 색상 */
+  color: rgb(117, 117, 117);
 }
 
 .custom-checkbox-root:hover {
-  background-color: #e5e7f6fb; /* 마우스 커서가 체크박스 위에 위치했을 때 */
+  background-color: #e5e7f6fb;
 }
 
 .custom-checkbox-checked {
-  color: #3f51b5 !important; /* 체크된 상태의 색상 */
+  color: var(--primary-color) !important;
 }
 
 .custom-checkbox-checked .MuiIconButton-label:after {
-  color: #fff; /* 체크 표시의 색상 */
+  color: #fff;
 }
+
+/* Logout Button Style */
+.logout-button {
+  color: black/*var(--logout-button-color)*/ !important;
+  background-color: var(--button-hover-bg) !important;
+  font-weight: 500 !important;
+}
+.logout-button :hover {
+  border-color: var(--hover-border-color) !important;
+  color: var(--logout-button-color) !important;
+  font-weight: 500 !important;
+}
+

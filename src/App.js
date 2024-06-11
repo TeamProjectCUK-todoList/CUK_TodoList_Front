@@ -261,8 +261,8 @@ class App extends React.Component {
     // Text and Button without AppBar
     const topBar = (
       <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
-        <Typography variant='h6'>오늘의 할일</Typography>
-        <Button color="inherit" onClick={signout}>logout</Button>
+        <Typography variant='h6'>TO-DO LIST</Typography>
+        <Button className="logout-button" onClick={signout}>logout</Button>
       </Box>
     );
 

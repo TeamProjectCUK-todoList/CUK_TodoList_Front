@@ -1,11 +1,19 @@
 :root {
-  --primary-color: #cfae7f;
-  --secondary-color: #808080;
-  --background-color: #EAE7DC;
-  --button-disabled-bg: #fff;
-  --button-hover-bg: #d8c3a5;
-  --hover-border-color: #e98074;
-  --logout-button-color: #fff;
+  /*기본 버튼*/
+  --primary-color: #d8c3a5; 
+  /*텍스트*/
+  --secondary-color: #808080; 
+  /*배경*/
+  --background-color: #EAE7DC; 
+  /*버튼 hover*/
+  --btn-hover: #cfae7f; 
+  /*체크박스, 토글 */
+  --checked-bg-color: #e85a4f;  
+  --checkbox-hover-bg:  #f9d4d2;
+  --toggle-hover-bg: #e98074;
+  --toggle-default-bg: #c6c4c4; 
+  /*기본 화이트*/
+  --default-white: #fff;
 }
 
 body, html, #root {
@@ -101,52 +109,35 @@ body, html, #root {
 .button-disabled {
   border-color: var(--secondary-color) !important;
   color: var(--secondary-color) !important;
-  background-color: var(--button-disabled-bg) !important;
+  background-color: var(--default-white) !important;
 }
 
 .button-enabled {
-  border-color: var(--button-hover-bg) !important;
-  color: var(--logout-button-color) !important;
-  background-color: var(--button-hover-bg) !important;
-}
-
-.button-hovered {
   border-color: var(--primary-color) !important;
-  color: var(--logout-button-color) !important;
+  color: var(--default-white) !important;
   background-color: var(--primary-color) !important;
 }
 
+.button-hovered {
+  border-color: var(--btn-hover) !important;
+  color: var(--default-white) !important;
+  background-color: var(--btn-hover) !important;
+}
+
 .button-enabled:hover {
-  border-color: var(--hover-border-color) !important;
-  color: var(--logout-button-color) !important;
-}
-
-/* Custom Checkbox Styles */
-.custom-checkbox-root {
-  color: rgb(117, 117, 117);
-}
-
-.custom-checkbox-root:hover {
-  background-color: #e5e7f6fb;
-}
-
-.custom-checkbox-checked {
-  color: var(--primary-color) !important;
-}
-
-.custom-checkbox-checked .MuiIconButton-label:after {
-  color: #fff;
+  /*border-color: var(--hover-border-color) !important;*/
+  color: var(--default-white) !important;
 }
 
 /* Logout Button Style */
 .logout-button {
-  color: black/*var(--logout-button-color)*/ !important;
-  background-color: var(--button-hover-bg) !important;
+  color: black !important;
+  background-color: var(--primary-color) !important;
   font-weight: 500 !important;
 }
 .logout-button :hover {
-  border-color: var(--hover-border-color) !important;
-  color: var(--logout-button-color) !important;
+  /*border-color: var(--hover-border-color) !important;*/
+  color: var(--default-white) !important;
   font-weight: 500 !important;
 }
 

@@ -10,7 +10,7 @@ import { Paper, List, Container, Grid, Typography, Box, Button, IconButton, List
 import { ArrowBack, ArrowForward, Delete as DeleteIcon } from '@material-ui/icons';
 import './App.css';
 import { call, signout } from './service/ApiService';
-import { format, addDays, startOfMonth, differenceInDays, startOfToday } from 'date-fns';
+import { format, addDays, startOfMonth, differenceInDays, startOfToday, isSameDay } from 'date-fns';
 import { toDate, toZonedTime } from 'date-fns-tz';
 import ErrorBoundary from './ErrorBoundary';
 import DDayIcon from './images/d_day_icon.png';
@@ -228,6 +228,21 @@ class App extends React.Component {
     }
   }
 
+  getTileClassName = ({ date, view }) => {
+    const today = startOfToday();
+    const { date: selectedDate } = this.state;
+
+    if (view === 'month') {
+      if (isSameDay(date, today)) {
+        return 'react-calendar__tile--now';
+      }
+
+      if (isSameDay(date, selectedDate)) {
+        return 'react-calendar__tile--active';
+      }
+    }
+  }
+
   render() {
     const { date, todoItems, eventItems, loading, activeStartDate } = this.state;
     const formattedDate = `${date.getFullYear()}년 ${String(date.getMonth() + 1).padStart(2, '0')}월 ${String(date.getDate()).padStart(2, '0')}일`;
@@ -293,6 +308,7 @@ class App extends React.Component {
                     onDateChange={this.handleCalendarDateChange}
                     activeStartDate={activeStartDate}
                     tileContent={this.getTileContent}
+                    tileClassName={this.getTileClassName} // 추가된 부분
                   />
 
                   <Box className="section-title" style={{ margin: 5 }}>
@@ -404,3 +420,4 @@ class App extends React.Component {
 }
 
 export default App;
+

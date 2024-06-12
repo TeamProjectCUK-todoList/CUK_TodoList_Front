@@ -1,20 +1,24 @@
 import React from "react";
 import { ListItem, ListItemText, InputBase, Checkbox, ListItemSecondaryAction, IconButton, withStyles } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
+import './App.css';
+
+// CSS 변수 값을 가져오는 함수
+const getCSSVariableValue = (variable) => getComputedStyle(document.documentElement).getPropertyValue(variable);
 
 // Custom styled Checkbox
 const CustomCheckbox = withStyles({
   root: {
-    color: 'rgb(117, 117, 117)', // 기본 상태 테두리 색상
+    color: getCSSVariableValue('--secondary-color').trim(), // 기본 상태 테두리 색상
     '&:hover': {
-      backgroundColor: '#e5e7f6fb', // 마우스 커서가 체크박스 위에 위치했을 때
+      backgroundColor: getCSSVariableValue('--checkbox-hover-bg').trim(), // 마우스 커서가 체크박스 위에 위치했을 때
     },
   },
   checked: {
-    color: '#3f51b5 !important', // 체크된 상태의 테두리 색상
+    color: `${getCSSVariableValue('--checked-bg-color').trim()} !important`, // 체크된 상태의 테두리 색상
   },
   indeterminate: {
-    color: '#3f51b5',
+    color: getCSSVariableValue('--default-white').trim(),
   },
 })((props) => <Checkbox color="default" {...props} />);
 

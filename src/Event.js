@@ -2,6 +2,10 @@ import React from "react";
 import { ListItem, ListItemText, InputBase, ListItemSecondaryAction, IconButton } from "@material-ui/core";
 import { Toggle } from "@fluentui/react";
 import CloseIcon from "@material-ui/icons/Close";
+import './App.css';
+
+// CSS 변수 값을 가져오는 함수
+const getCSSVariableValue = (variable) => getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
 
 class Event extends React.Component {
   constructor(props) {
@@ -41,6 +45,24 @@ class Event extends React.Component {
 
   render() {
     const item = this.state.item;
+    const toggleStyles = {
+      root: {
+        marginBottom: '8px',
+      },
+      pill: {
+        backgroundColor: item.done ? getCSSVariableValue('--checked-bg-color') : getCSSVariableValue('--toggle-default-bg'),
+        borderColor: item.done ? getCSSVariableValue('--checked-bg-color') : getCSSVariableValue('--toggle-default-bg'),
+        ':hover': {
+          backgroundColor: item.done ? getCSSVariableValue('--toggle-hover-bg') : getCSSVariableValue('--secondary-color'),
+          borderColor: item.done ? getCSSVariableValue('--toggle-hover-bg') : getCSSVariableValue('--secondary-color'),
+        },
+      },
+      thumb: {
+        backgroundColor: item.done ? getCSSVariableValue('--default-white') : getCSSVariableValue('--default-white'),
+        borderColor: item.done ? getCSSVariableValue('--default-white') : getCSSVariableValue('--default-white'),
+      },
+    };
+
     return (
       <ListItem>
         <ListItemText>
@@ -57,8 +79,9 @@ class Event extends React.Component {
             onKeyPress={this.enterKeyEventHandler}
           />
         </ListItemText>
-        <div style={{ marginRight: '16px', marginTop: '8px' }}> {/* 마진 추가 */}
-          <Toggle 
+        <div style={{ marginRight: '16px', marginTop: '8px' }}>
+          <Toggle
+            styles={toggleStyles}
             checked={item.done}
             onChange={this.toggleEventHandler}
           />

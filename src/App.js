@@ -284,10 +284,10 @@ class App extends React.Component {
             backgroundColor: '#ffffff', 
             borderRadius: '8px', 
             marginTop: '8px', 
-            border: '5px solid #e98074' // 테두리 추가
+            border: '5px solid #8e8d8a' // 테두리 추가
           }}
         >
-          <Typography variant='h4' style={{ fontWeight: 'bold', color: '#e98074' }}> TO-DO LIST</Typography>
+          <Typography variant='h4' style={{ fontWeight: 'bold', color: '#8e8d8a' }}> TO-DO LIST</Typography>
           <Button className="logout-button" onClick={signout} style={{ position: 'absolute', right: 50, top: 25, textTransform: 'capitalize' }}>Logout</Button>
         </Box>
       </Container>

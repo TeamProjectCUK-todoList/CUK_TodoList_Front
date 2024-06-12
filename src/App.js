@@ -4,13 +4,18 @@ import AddTodo from './AddTodo';
 import Event from './Event';
 import AddEvent from './AddEvent';
 import MyCalendar from './components/Calendar';
-import { Paper, List, Container, Grid, Button, AppBar, Toolbar, Typography, Box, IconButton, ListItem, ListItemText, Divider } from "@material-ui/core";
-import { ArrowBack, ArrowForward } from '@material-ui/icons';
+import DigitalClock from './components/DigitalClock'; // 추가된 부분
+import Weather from './components/Weather'; // 추가된 부분
+import { Paper, List, Container, Grid, Typography, Box, Button, IconButton, ListItem, ListItemText, Divider, Tooltip } from "@material-ui/core";
+import { ArrowBack, ArrowForward, Delete as DeleteIcon } from '@material-ui/icons';
 import './App.css';
 import { call, signout } from './service/ApiService';
 import { format, addDays, startOfMonth, differenceInDays, startOfToday } from 'date-fns';
 import { toDate, toZonedTime } from 'date-fns-tz';
 import ErrorBoundary from './ErrorBoundary';
+import DDayIcon from './images/d_day_icon.png';
+import TodoIcon from './images/todo_icon.png';
+import EventIcon from './images/event_icon.png';
 
 class App extends React.Component {
   constructor(props) {
@@ -21,15 +26,17 @@ class App extends React.Component {
       loading: true,
       date: new Date(),
       activeStartDate: startOfMonth(new Date()),
-      allEventItems: []
+      allEventItems: [],
+      todoDates: [],  // 추가된 상태
+      eventDates: []  // 추가된 상태
     };
   }
 
   // Todo 관련
   addTodo = (item) => {
     const { date } = this.state;
-    const utcDate = toDate(date, { timeZone: 'UTC' });
-    const formattedDate = format(utcDate, 'yyyy-MM-dd');
+    const localDate = toDate(date, { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+    const formattedDate = format(localDate, 'yyyy-MM-dd');
     const newItem = { ...item, date: formattedDate };
     call("/todo", "POST", newItem)
       .then(() => this.loadTodosByDate(date))
@@ -43,16 +50,28 @@ class App extends React.Component {
   }
 
   updateTodo = (item) => {
-    call("/todo", "PUT", item)
+    const localDate = toDate(item.date, { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+    const formattedDate = format(localDate, 'yyyy-MM-dd');
+    const updatedItem = { ...item, date: formattedDate };
+    call("/todo", "PUT", updatedItem)
       .then(() => this.loadTodosByDate(this.state.date))
       .catch((error) => console.error("Failed to update todo:", error));
+  }
+
+  deleteTodosByDate = () => {
+    const { date } = this.state;
+    const localDate = toDate(date, { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+    const formattedDate = format(localDate, 'yyyy-MM-dd');
+    call(`/todo/date/${formattedDate}`, "DELETE", null)
+      .then(() => this.loadTodosByDate(date))
+      .catch((error) => console.error("Failed to delete todos by date:", error));
   }
 
   // Event 관련  
   addEvent = (item) => {
     const { date } = this.state;
-    const utcDate = toDate(date, { timeZone: 'UTC' });
-    const formattedDate = format(utcDate, 'yyyy-MM-dd');
+    const localDate = toDate(date, { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+    const formattedDate = format(localDate, 'yyyy-MM-dd');
     const newItem = { ...item, date: formattedDate };
     call("/event", "POST", newItem)
       .then(() => {
@@ -72,7 +91,10 @@ class App extends React.Component {
   }
 
   updateEvent = (item) => {
-    call("/event", "PUT", item)
+    const localDate = toDate(item.date, { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+    const formattedDate = format(localDate, 'yyyy-MM-dd');
+    const updatedItem = { ...item, date: formattedDate };
+    call("/event", "PUT", updatedItem)
       .then(() => {
         this.loadEventsByDate(this.state.date);
         this.loadEvents();
@@ -80,10 +102,22 @@ class App extends React.Component {
       .catch((error) => console.error("Failed to update event:", error));
   }
 
+  deleteEventsByDate = () => {
+    const { date } = this.state;
+    const localDate = toDate(date, { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+    const formattedDate = format(localDate, 'yyyy-MM-dd');
+    call(`/event/date/${formattedDate}`, "DELETE", null)
+      .then(() => {
+        this.loadEventsByDate(date);
+        this.loadEvents();
+      })
+      .catch((error) => console.error("Failed to delete events by date:", error));
+  }
+
   componentDidMount() {
     this.loadTodosByDate(this.state.date);
     this.loadEvents();
-    this.loadEventsByDate(this.state.date);
+    this.loadEventsByDate(this.state.date);  
   }
 
   handleDateChange = (days) => {
@@ -113,13 +147,19 @@ class App extends React.Component {
     const utcDate = toDate(date, { timeZone: 'UTC' });
     const formattedDate = format(utcDate, 'yyyy-MM-dd');
     call(`/todo/${formattedDate}`, "GET", null)
-      .then((response) => this.setState({ todoItems: response.data, loading: false }))
+      .then((response) => {
+        const localTodos = response.data.map(todo => {
+          const localDate = toZonedTime(todo.date, Intl.DateTimeFormat().resolvedOptions().timeZone);
+          return { ...todo, date: localDate };
+        });
+        this.setState({ todoItems: localTodos, loading: false });
+      })
       .catch((error) => console.error("Failed to load todos:", error));
 
     call(`/todo`, "GET", null)
       .then((response) => {
         const todoDates = response.data.map(todo => {
-          const localDate = toZonedTime(todo.date, 'UTC');
+          const localDate = toZonedTime(todo.date, Intl.DateTimeFormat().resolvedOptions().timeZone);
           return format(localDate, 'yyyy-MM-dd');
         });
         this.setState({ todoDates });
@@ -132,7 +172,13 @@ class App extends React.Component {
     const utcDate = toDate(date, { timeZone: 'UTC' });
     const formattedDate = format(utcDate, 'yyyy-MM-dd');
     call(`/event/${formattedDate}`, "GET", null)
-      .then((response) => this.setState({ eventItems: response.data, loading: false }))
+      .then((response) => {
+        const localEvents = response.data.map(event => {
+          const localDate = toZonedTime(event.date, Intl.DateTimeFormat().resolvedOptions().timeZone);
+          return { ...event, date: localDate };
+        });
+        this.setState({ eventItems: localEvents, loading: false });
+      })
       .catch((error) => console.error("Failed to load events:", error));
   }
 
@@ -140,11 +186,12 @@ class App extends React.Component {
   loadEvents = () => {
     call(`/event`, "GET", null)
       .then((response) => {
-        this.setState({ allEventItems: response.data, loading: false });
-        const eventDates = response.data.map(event => {
-          const localDate = toZonedTime(event.date, 'UTC');
-          return format(localDate, 'yyyy-MM-dd');
+        const localEvents = response.data.map(event => {
+          const localDate = toZonedTime(event.date, Intl.DateTimeFormat().resolvedOptions().timeZone);
+          return { ...event, date: localDate };
         });
+        this.setState({ allEventItems: localEvents, loading: false });
+        const eventDates = localEvents.map(event => format(event.date, 'yyyy-MM-dd'));
         this.setState({ eventDates });
       })
       .catch((error) => console.error("Failed to load all events:", error));
@@ -159,18 +206,40 @@ class App extends React.Component {
       .map(event => {
         const eventDate = new Date(event.date);
         const dDay = differenceInDays(eventDate, today);
-        return { ...event, dDay };
+        return { ...event, dDay: dDay === 0 ? 'DAY' : dDay }; // 0일일 때 "DAY"로 표시
       })
-      .sort((a, b) => a.dDay - b.dDay); // D-day 기준으로 정렬
+      .sort((a, b) => a.dDay - b.dDay || (a.dDay === 'DAY' ? -1 : 1)); // D-day 기준으로 정렬
+  }
+
+  getTileContent = ({ date, view }) => {
+    const { todoDates, eventDates } = this.state;
+    const formattedDate = format(date, 'yyyy-MM-dd');
+
+    if (view === 'month') {
+      const hasTodo = todoDates.includes(formattedDate);
+      const hasEvent = eventDates.includes(formattedDate);
+
+      return (
+        <div className="tile-content">
+          {hasTodo && <div className="todo-indicator"></div>}
+          {hasEvent && <div className="event-indicator"></div>}
+        </div>
+      );
+    }
   }
 
   render() {
     const { date, todoItems, eventItems, loading, activeStartDate } = this.state;
     const formattedDate = `${date.getFullYear()}년 ${String(date.getMonth() + 1).padStart(2, '0')}월 ${String(date.getDate()).padStart(2, '0')}일`;
-  
+
+    const totalTodos = todoItems.length;
+    const doneTodos = todoItems.filter(item => item.done).length;
+
+    const totalEvents = eventItems.length;
+
     // Calculate D-days for events
     const dDayEvents = this.calculateDDays();
-  
+
     // Todo 관련
     const todoList = todoItems.length > 0 && (
       <List>
@@ -179,7 +248,7 @@ class App extends React.Component {
         ))}
       </List>
     );
-  
+
     // Event 관련
     const eventList = eventItems.length > 0 && (
       <List>
@@ -188,25 +257,18 @@ class App extends React.Component {
         ))}
       </List>
     );
-  
-    const navigationBar = (
-      <AppBar position='static'>
-        <Toolbar>
-          <Grid justify="space-between" container>
-            <Grid item>
-              <Typography variant='h6'>오늘의 할일</Typography>
-            </Grid>
-            <Grid item>
-              <Button color="inherit" onClick={signout}>logout</Button>
-            </Grid>
-          </Grid>
-        </Toolbar>
-      </AppBar>
+
+    // Text and Button without AppBar
+    const topBar = (
+      <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
+        <Typography variant='h6'>TO-DO LIST</Typography>
+        <Button className="logout-button" onClick={signout}>logout</Button>
+      </Box>
     );
-  
+
     // D-day list for events
     const dDayList = dDayEvents.length > 0 && (
-      <Paper style={{ margin: 16, width: '100%' }}>
+      <Box style={{ margin: 16, width: '100%' }}>
         <List>
           {dDayEvents.map((event, idx) => (
             <ListItem key={event.id}>
@@ -214,52 +276,122 @@ class App extends React.Component {
             </ListItem>
           ))}
         </List>
-      </Paper>
+      </Box>
     );
-  
+
     const todoEventListPage = (
       <div>
-        {navigationBar}
+        {topBar}
         <Container maxWidth="md">
           <Box mt={4}>
             <Grid container spacing={2}>
+              {/* 캘린더 */}
               <Grid item xs={12} md={6}>
-                <Paper style={{ padding: 16, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <MyCalendar 
-                    date={date} 
-                    onDateChange={this.handleCalendarDateChange} 
-                    activeStartDate={activeStartDate} 
+                <Paper style={{ padding: 16, minHeight: '817px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <MyCalendar
+                    date={date}
+                    onDateChange={this.handleCalendarDateChange}
+                    activeStartDate={activeStartDate}
+                    tileContent={this.getTileContent}
                   />
+
+                  <Box className="section-title" style={{ margin: 5 }}>
+                    <Typography variant="h6" className="section-title-text">D-DAY</Typography>
+                    <img src={DDayIcon} alt="icon" className="icon" />
+                  </Box>
+                  <Divider style={{ margin: '5px 0', width: '100%' }} />
+                  {/* D-Day 리스트 */}
                   {dDayList}
                 </Paper>
               </Grid>
+
               <Grid item xs={12} md={6}>
-                <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
-                  <IconButton onClick={() => this.handleDateChange(-1)}>
-                    <ArrowBack />
-                  </IconButton>
-                  <Typography variant="h6" style={{ margin: '0 16px', whiteSpace: 'nowrap' }}>{formattedDate}</Typography>
-                  <IconButton onClick={() => this.handleDateChange(1)}>
-                    <ArrowForward />
-                  </IconButton>
-                </Box>
-                <Paper style={{ padding: 16, marginBottom: 16 }}>
+                <Paper style={{ padding: 16, marginBottom: 16, height: 'auto', overflowY: 'auto', position: 'relative' }}>
+                  {/* 현재 날짜 */}
+                  <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
+                    <IconButton onClick={() => this.handleDateChange(-1)}>
+                      <ArrowBack />
+                    </IconButton>
+                    <Typography variant="h6" style={{ margin: '0 16px', whiteSpace: 'nowrap' }}>{formattedDate}</Typography>
+                    <IconButton onClick={() => this.handleDateChange(1)}>
+                      <ArrowForward />
+                    </IconButton>
+                  </Box>
+                  <Box className="section-title">
+                    <Typography variant="h6" className="section-title-text">TO-DO</Typography>
+                    <img src={TodoIcon} alt="icon" className="icon" />
+                  </Box>
                   <AddTodo add={this.addTodo} />
-                  {todoList}
-                  <Divider style={{ margin: '16px 0' }} />
+                  {/* To-do 리스트 */}
+                  <Box style={{ minHeight: '280px', overflowY: 'auto' }}>
+                    {todoList}
+                  </Box>
+
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                    {/* To-do 진행 상황 */}
+                    <Box ml="25px">
+                      <Typography variant="body2" className="status-text">
+                        Total: {totalTodos} Done: {doneTodos}
+                      </Typography>
+                    </Box>
+                    {/* To-do 전체 삭제 */}
+                    <Box mr="15px">
+                      <Tooltip title="Delete All">
+                        <IconButton
+                          className="expandable-button"
+                          onClick={this.deleteTodosByDate}
+                        >
+                          <DeleteIcon style={{ color: '#808080' }} />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  </Box>
+                  {/* 구분선 */}
+                  <Divider style={{ margin: '5px 0' }} />
+                  <Box className="section-title">
+                    <Typography variant="h6" className="section-title-text">EVENT</Typography>
+                    <img src={EventIcon} alt="icon" className="icon" />
+                  </Box>
                   <AddEvent add={this.addEvent} />
-                  {eventList}
+                  {/* Event 리스트 */}
+                  <Box style={{ minHeight: '150px', overflowY: 'auto' }}>
+                    {eventList}
+                  </Box>
+                  {/* Event 리스트 갯수 */}
+                  <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Box ml="25px">
+                      <Typography variant="body2" className="status-text">
+                        Total: {totalEvents}
+                      </Typography>
+                    </Box>
+                    {/* Event 전체 삭제 */}
+                    <Box mr="15px">
+                      <Tooltip title="Delete All">
+                        <IconButton
+                          className="expandable-button"
+                          onClick={this.deleteEventsByDate}
+                        >
+                          <DeleteIcon style={{ color: '#808080' }} />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  </Box>
                 </Paper>
+                {/* 날씨와 디지털 시계 추가 */}
+                <div className="clock-container">
+                  <Weather />
+                  <DigitalClock />
+                </div>
               </Grid>
             </Grid>
           </Box>
         </Container>
       </div>
     );
-  
+
     const loadingPage = <h1>로딩중...</h1>
     const contentTodoEvent = loading ? loadingPage : todoEventListPage;
-  
+
     return (
       <div className="App">
         <ErrorBoundary>
@@ -268,8 +400,7 @@ class App extends React.Component {
       </div>
     );
   }
-  
-  
+
 }
 
 export default App;

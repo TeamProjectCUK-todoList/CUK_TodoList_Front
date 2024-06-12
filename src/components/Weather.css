@@ -1,0 +1,43 @@
+.weather-container {
+  color: black;
+  text-align: center;
+  padding: 20px; /* DigitalClock과 동일한 padding */
+  border-radius: 10px; /* DigitalClock과 동일한 border-radius */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  bottom: 155px; /* DigitalClock의 위에 더 위로 배치되도록 설정 */
+  right: 42px;
+  width: 255px; /* DigitalClock과 동일한 width */
+  height: 50px; /* 높이 추가 */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  position: relative;
+}
+
+.weather-container .temp {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+}
+
+.weather-container .city {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+}
+
+.weather-container span {
+  display: block;
+  font-size: 18px;
+}
+
+.weather-icon {
+  position: absolute;
+  left: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 80px;
+  height: 80px;
+}

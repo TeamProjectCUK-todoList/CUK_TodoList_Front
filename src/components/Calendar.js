@@ -7,7 +7,7 @@ import './Calendar.css';
 
 moment.locale('en-gb');
 
-const MyCalendar = ({ date, onDateChange, activeStartDate }) => {
+const MyCalendar = ({ date, onDateChange, activeStartDate, tileContent }) => {
   return (
     <div className="calendar-container">
       <Calendar
@@ -17,6 +17,7 @@ const MyCalendar = ({ date, onDateChange, activeStartDate }) => {
         onActiveStartDateChange={({ activeStartDate }) => onDateChange(activeStartDate)}
         locale="en-GB"
         className="custom-calendar"
+        tileContent={tileContent}
       />
     </div>
   );

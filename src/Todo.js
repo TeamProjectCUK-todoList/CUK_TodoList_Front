@@ -1,11 +1,27 @@
 import React from "react";
-import { ListItem, ListItemText, InputBase, Checkbox, ListItemSecondaryAction, IconButton } from "@material-ui/core";
-import DeleteOutlined from "@material-ui/icons/DeleteOutlined";
+import { ListItem, ListItemText, InputBase, Checkbox, ListItemSecondaryAction, IconButton, withStyles } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
+
+// Custom styled Checkbox
+const CustomCheckbox = withStyles({
+  root: {
+    color: 'rgb(117, 117, 117)', // 기본 상태 테두리 색상
+    '&:hover': {
+      backgroundColor: '#e5e7f6fb', // 마우스 커서가 체크박스 위에 위치했을 때
+    },
+  },
+  checked: {
+    color: '#3f51b5 !important', // 체크된 상태의 테두리 색상
+  },
+  indeterminate: {
+    color: '#3f51b5',
+  },
+})((props) => <Checkbox color="default" {...props} />);
 
 class Todo extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { item: props.item, readOnly: true };  // 매개변수 item의 변수/값을 item에 대입
+    this.state = { item: props.item, readOnly: true };
     this.delete = props.delete;
     this.update = props.update;
   }
@@ -15,14 +31,12 @@ class Todo extends React.Component {
   }
 
   offReadOnlyMode = () => {
-    this.setState({ readOnly: false }, () => {
-      console.log("ReadOnly?", this.state.readOnly)
-    });
+    this.setState({ readOnly: false });
   }
 
   enterKeyEventHandler = (e) => {
     if (e.key === "Enter") {
-      this.setState({ readOnly: true })
+      this.setState({ readOnly: true });
       this.update(this.state.item);
     }
   }
@@ -44,7 +58,7 @@ class Todo extends React.Component {
     const item = this.state.item;
     return (
       <ListItem>
-        <Checkbox
+        <CustomCheckbox
           checked={item.done}
           onChange={this.checkboxEventHandler}
         />
@@ -60,14 +74,13 @@ class Todo extends React.Component {
             onClick={this.offReadOnlyMode}
             onChange={this.editEventHandler}
             onKeyPress={this.enterKeyEventHandler}
-            style={{ textDecoration: item.done ? 'line-through' : 'none' }} // 줄 긋기 스타일 추가
+            style={{ textDecoration: item.done ? 'line-through' : 'none' }}
           />
         </ListItemText>
 
         <ListItemSecondaryAction>
-          <IconButton aria-label="Delete"
-            onClick={this.deleteEventHandler}>
-            <DeleteOutlined />
+          <IconButton aria-label="delete" onClick={this.deleteEventHandler}>
+            <CloseIcon />
           </IconButton>
         </ListItemSecondaryAction>
       </ListItem>

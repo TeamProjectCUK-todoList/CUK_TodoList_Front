@@ -1,5 +1,15 @@
+:root {
+  --primary-color: #cfae7f;
+  --secondary-color: #808080;
+  --background-color: #EAE7DC;
+  --button-disabled-bg: #fff;
+  --button-hover-bg: #d8c3a5;
+  --hover-border-color: #e98074;
+  --logout-button-color: #fff;
+}
+
 body, html, #root {
-  background-color: #F0F2F5;
+  background-color: var(--background-color);
   height: 100%;
   margin: 0;
 }
@@ -45,3 +55,98 @@ body, html, #root {
     transform: rotate(360deg);
   }
 }
+
+.expandable-button-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.expandable-button {
+  padding: 8px;
+  border-radius: 10px;
+  transition: margin-left 0.3s;
+}
+
+.expandable-button:hover {
+  border-radius: 5px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  margin-left: 8px;
+}
+
+.section-title img {
+  margin-left: 8px;
+  margin-right: 10px;
+  width: 24px;
+  height: 24px;
+}
+
+.section-title h6 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.status-text {
+  color: var(--secondary-color);
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Button Styles */
+.button-disabled {
+  border-color: var(--secondary-color) !important;
+  color: var(--secondary-color) !important;
+  background-color: var(--button-disabled-bg) !important;
+}
+
+.button-enabled {
+  border-color: var(--button-hover-bg) !important;
+  color: var(--logout-button-color) !important;
+  background-color: var(--button-hover-bg) !important;
+}
+
+.button-hovered {
+  border-color: var(--primary-color) !important;
+  color: var(--logout-button-color) !important;
+  background-color: var(--primary-color) !important;
+}
+
+.button-enabled:hover {
+  border-color: var(--hover-border-color) !important;
+  color: var(--logout-button-color) !important;
+}
+
+/* Custom Checkbox Styles */
+.custom-checkbox-root {
+  color: rgb(117, 117, 117);
+}
+
+.custom-checkbox-root:hover {
+  background-color: #e5e7f6fb;
+}
+
+.custom-checkbox-checked {
+  color: var(--primary-color) !important;
+}
+
+.custom-checkbox-checked .MuiIconButton-label:after {
+  color: #fff;
+}
+
+/* Logout Button Style */
+.logout-button {
+  color: black/*var(--logout-button-color)*/ !important;
+  background-color: var(--button-hover-bg) !important;
+  font-weight: 500 !important;
+}
+.logout-button :hover {
+  border-color: var(--hover-border-color) !important;
+  color: var(--logout-button-color) !important;
+  font-weight: 500 !important;
+}
+

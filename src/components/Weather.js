@@ -15,6 +15,10 @@ const Weather = () => {
   const [backgroundStyle, setBackgroundStyle] = useState({});
 
   useEffect(() => {
+    getLocation();
+  }, []);
+
+  const getLocation = () => {
     const onGeoOk = (pos) => {
       const lat = pos.coords.latitude;
       const lon = pos.coords.longitude;
@@ -42,7 +46,7 @@ const Weather = () => {
     };
 
     navigator.geolocation.getCurrentPosition(onGeoOk, onGeoError);
-  }, []);
+  };
 
   const getWeatherIcon = (weather) => {
     switch(weather) {
@@ -93,3 +97,4 @@ const Weather = () => {
 };
 
 export default Weather;
+

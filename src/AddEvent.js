@@ -1,6 +1,23 @@
 import React from "react";
-import { TextField, Button, Box } from "@material-ui/core";
+import { TextField, Button, Box, makeStyles } from "@material-ui/core";
 import './App.css';
+
+// CSS 변수를 가져오는 함수
+const getCSSVariableValue = (variable) => getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+
+const useStyles = makeStyles({
+    underline: {
+        '&:before': {
+            borderBottom: `1px solid ${getCSSVariableValue('--secondary-color')}`, // 기본 언더라인 색상
+        },
+        '&:hover:not(.Mui-disabled):before': {
+            borderBottom: `2px solid ${getCSSVariableValue('--default-black')}`, // 호버 시 언더라인 색상
+        },
+        '&:after': {
+            borderBottom: `2px solid ${getCSSVariableValue('--primary-color')}`, // 포커스 시 언더라인 색상
+        },
+    },
+});
 
 class AddEvent extends React.Component {
     constructor(props) {
@@ -45,6 +62,7 @@ class AddEvent extends React.Component {
     }
 
     render() {
+        const classes = this.props.classes;
         const { isButtonDisabled, isHovered } = this.state;
         
         const buttonClass = isButtonDisabled
@@ -59,6 +77,11 @@ class AddEvent extends React.Component {
                         onChange={this.onInputChange}
                         value={this.state.item.title}
                         onKeyPress={this.enterKeyEventHandler}
+                        InputProps={{
+                            classes: {
+                                underline: classes.underline,
+                            },
+                        }}
                         style={{ flex: 1, marginRight: 8 }}
                     />
                     <Button
@@ -77,9 +100,7 @@ class AddEvent extends React.Component {
     }
 }
 
-export default AddEvent;
-
-
-
-
-
+export default function WrappedAddEvent(props) {
+    const classes = useStyles();
+    return <AddEvent {...props} classes={classes} />;
+}

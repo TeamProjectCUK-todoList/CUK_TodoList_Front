@@ -36,7 +36,7 @@
 .custom-calendar .react-calendar__tile--now {
   background: var(--primary-color) !important; /* 파란색 */
   border-radius: 8px !important; /* 모서리가 둥근 정사각형 */
-  color: black !important;
+  color: var(--default-black) !important;
   width: 36px; /* 정사각형 유지 */
   height: 36px; /* 정사각형 유지 */
 }
@@ -44,7 +44,7 @@
 .custom-calendar .react-calendar__tile--active {
   background:var(--background-color) !important; /* 파란색 */
   border-radius: 8px !important; /* 모서리가 둥근 정사각형 */
-  color: black !important;
+  color: var(--default-black) !important;
   width: 36px; /* 정사각형 유지 */
   height: 36px; /* 정사각형 유지 */
 }
@@ -52,7 +52,7 @@
 .custom-calendar .react-calendar__tile--now.react-calendar__tile--active {
   background: var(--primary-color) !important; /* 파란색 */
   border-radius: 8px !important; /* 모서리가 둥근 정사각형 */
-  color: black !important;
+  color: var(--default-black) !important;
   width: 36px; /* 정사각형 유지 */
   height: 36px; /* 정사각형 유지 */
 }
@@ -60,7 +60,7 @@
 .custom-calendar .react-calendar__tile:hover {
   background: var(--background-color) !important; /* 파란색 */
   border-radius: 8px !important; /* 모서리가 둥근 정사각형 */
-  color: black !important;
+  color: var(--default-black) !important;
   width: 36px; /* 정사각형 유지 */
   height: 36px; /* 정사각형 유지 */
 }

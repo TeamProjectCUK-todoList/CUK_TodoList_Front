@@ -273,13 +273,26 @@ class App extends React.Component {
       </List>
     );
 
-    // Text and Button without AppBar
     const topBar = (
-      <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
-        <Typography variant='h6'>TO-DO LIST</Typography>
-        <Button className="logout-button" onClick={signout}>logout</Button>
-      </Box>
+      <Container maxWidth="md">
+        <Box 
+          display="flex" 
+          justifyContent="center" 
+          alignItems="center" 
+          p={2} 
+          style={{
+            backgroundColor: '#ffffff', 
+            borderRadius: '8px', 
+            marginTop: '8px', 
+            border: '5px solid #e98074' // 테두리 추가
+          }}
+        >
+          <Typography variant='h4' style={{ fontWeight: 'bold', color: '#e98074' }}> TO-DO LIST</Typography>
+          <Button className="logout-button" onClick={signout} style={{ position: 'absolute', right: 50, top: 25, textTransform: 'capitalize' }}>Logout</Button>
+        </Box>
+      </Container>
     );
+    
 
     // D-day list for events
     const dDayList = dDayEvents.length > 0 && (
@@ -287,18 +300,26 @@ class App extends React.Component {
         <List>
           {dDayEvents.map((event, idx) => (
             <ListItem key={event.id}>
-              <ListItemText primary={`${event.title}: D-${event.dDay}`} />
+              <ListItemText>
+                <Typography variant="body1" component="span" style={{ marginRight: '12px' }}>
+                  {`D-${event.dDay}`}
+                </Typography>
+                <Typography variant="body1" component="span">
+                  {event.title}
+                </Typography>
+              </ListItemText>
             </ListItem>
           ))}
         </List>
       </Box>
     );
 
+
     const todoEventListPage = (
       <div>
         {topBar}
         <Container maxWidth="md">
-          <Box mt={4}>
+          <Box mt={2}>
             <Grid container spacing={2}>
               {/* 캘린더 */}
               <Grid item xs={12} md={6}>
@@ -375,7 +396,7 @@ class App extends React.Component {
                   </Box>
                   {/* Event 리스트 갯수 */}
                   <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Box ml="25px">
+                    <Box ml="16px">
                       <Typography variant="body2" className="status-text">
                         Total: {totalEvents}
                       </Typography>

@@ -101,51 +101,6 @@ export function googleSignin() {
         });
 }
 
-// 구글 로그인 콜백 처리
-// export function handleGoogleCallback(navigate) {
-//     const params = new URLSearchParams(window.location.search);
-//     const token = params.get('token');
-//     const email = params.get('email');
-    
-//     alert("Params: " + params); // 디버깅용 알림
-//     alert("Token: " + token); // 디버깅용 알림
-//     alert("Email: " + email); // 디버깅용 알림
-
-//     if (token && email) {
-//         // 로컬 스토리지에 토큰 저장
-//         localStorage.setItem("GOOGLE_ACCESS_TOKEN", token);
-//         localStorage.setItem("user_email", email);
-        
-//         alert("token : " + localStorage.getItem("GOOGLE_ACCESS_TOKEN"))
-//         // 홈 페이지로 리디렉션
-//         window.location.href = "/";
-//         alert("todo 가즈아");
-//     } else {
-//         console.error("URL에 토큰 또는 이메일이 없습니다.");
-//         window.location.href = "/login";
-//     }
-// }
-
-export function handleGoogleCallback() {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
-    const email = params.get('email');
-    
-    if (token && email) {
-        // 로컬 스토리지에 토큰 저장
-        localStorage.setItem("GOOGLE_ACCESS_TOKEN", token);
-        localStorage.setItem("user_email", email);
-        alert("token: " + token);
-        alert("userEmail: " + email);
-
-        // 홈 페이지로 리디렉션
-        window.location.href = "/";
-    } else {
-        console.error("URL에 토큰 또는 이메일이 없습니다.");
-        window.location.href = "/login";
-    }
-}
-
 // 로그아웃
 export function signout() {
     // local 스토리지에서 토큰 삭제

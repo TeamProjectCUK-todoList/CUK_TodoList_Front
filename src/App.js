@@ -17,6 +17,8 @@ import DDayIcon from './images/d_day_icon.png';
 import TodoIcon from './images/todo_icon.png';
 import EventIcon from './images/event_icon.png';
 
+import { loadUser } from './userInfoLoad';
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -28,7 +30,8 @@ class App extends React.Component {
       activeStartDate: startOfMonth(new Date()),
       allEventItems: [],
       todoDates: [],  // 추가된 상태
-      eventDates: []  // 추가된 상태
+      eventDates: [],  // 추가된 상태
+      userProv: ""
     };
   }
 
@@ -117,7 +120,18 @@ class App extends React.Component {
   componentDidMount() {
     this.loadTodosByDate(this.state.date);
     this.loadEvents();
-    this.loadEventsByDate(this.state.date);  
+    this.loadEventsByDate(this.state.date);
+    
+    this.loadUser(); // 사용자 정보 불러오기
+  }
+
+  // 유저정보
+  loadUser = () => {
+    loadUser()
+      .then((user) => {
+        this.setState({ userProv: user.provider });
+      })
+      .catch((error) => console.error("Failed to load user:", error));
   }
 
   handleDateChange = (days) => {
@@ -261,7 +275,7 @@ class App extends React.Component {
     // Text and Button without AppBar
     const topBar = (
       <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
-        <Typography variant='h6'>TO-DO LIST</Typography>
+        <Typography variant='h6'>TO-DO LIST{this.state.userProv && `(${this.state.userProv})`}</Typography>
         <Button className="logout-button" onClick={signout}>logout</Button>
       </Box>
     );

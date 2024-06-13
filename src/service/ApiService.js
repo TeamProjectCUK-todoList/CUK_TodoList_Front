@@ -38,7 +38,7 @@ export function call(api, method, request) {
             }
         })
         .catch((error) => {
-            alert("403 error???!")
+            // alert("403 error???!" + error)
             console.error("API call error:", error);
             if (error.status === 403) {
                 window.location.href = "/login";
@@ -54,6 +54,7 @@ export function signin(userDTO) {
             if (response.token) {
                 // local 스토리지에 토큰 저장
                 localStorage.setItem("ACCESS_TOKEN", response.token);
+                localStorage.setItem("userId", response.id);
                 // token이 존재하는 경우 todo 화면으로 리디렉트
                 window.location.href = "/";
             }

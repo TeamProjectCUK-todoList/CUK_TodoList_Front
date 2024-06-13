@@ -5,35 +5,40 @@ export function call(api, method, request) {
         "Content-Type": "application/json",
     });
 
-    const accessToken = localStorage.getItem("ACCESS_TOKEN");
+    const accessToken = localStorage.getItem("LOCAL_ACCESS_TOKEN");
     if (accessToken) {
         headers.append("Authorization", "Bearer " + accessToken);
     }
 
     let options = {
         headers: headers,
-        url: API_BASE_URL + api,
         method: method,
     };
     if (request) {
         options.body = JSON.stringify(request);
     }
 
-    return fetch(options.url, options)
+    return fetch(API_BASE_URL + api, options)
         .then((response) => {
-            return response.json().then((json) => {
-                if (!response.ok) {
-                    return Promise.reject(json);
-                }
-                return json;
-            }).catch((err) => {
-                if (!response.ok) {
-                    return Promise.reject({ status: response.status, message: response.statusText });
-                }
-                return { status: response.status, message: response.statusText };
-            });
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                return response.json().then((json) => {
+                    if (!response.ok) {
+                        return Promise.reject(json);
+                    }
+                    return json;
+                });
+            } else {
+                return response.text().then((text) => {
+                    if (!response.ok) {
+                        return Promise.reject({ status: response.status, message: response.statusText });
+                    }
+                    return text;
+                });
+            }
         })
         .catch((error) => {
+            alert("403 error???!")
             console.error("API call error:", error);
             if (error.status === 403) {
                 window.location.href = "/login";
@@ -42,13 +47,13 @@ export function call(api, method, request) {
         });
 }
 
-// 로그인을 위한 API 서비스 메소드 signin
+// 로컬 회원 로그인을 위한 API 서비스 메소드 signin
 export function signin(userDTO) {
     return call("/auth/signin", "POST", userDTO)
         .then((response) => {
             if (response.token) {
                 // local 스토리지에 토큰 저장
-                localStorage.setItem("ACCESS_TOKEN", response.token);
+                localStorage.setItem("LOCAL_ACCESS_TOKEN", response.token);
                 // token이 존재하는 경우 todo 화면으로 리디렉트
                 window.location.href = "/";
             }
@@ -60,7 +65,7 @@ export function signin(userDTO) {
         });
 }
 
-// 회원 가입 요청
+// 로컬 회원 가입 요청
 export function signup(userDTO) {
     return call("/auth/signup", "POST", userDTO)
         .then((response) => {
@@ -73,6 +78,72 @@ export function signup(userDTO) {
             alert("회원 가입 중 오류가 발생했습니다.");
             return Promise.reject(error);
         });
+}
+
+// 구글 로그인 요청
+export function googleSignin() {
+    return call("/api/v1/oauth2/google", "POST")
+        .then((response) => {
+            if (typeof response === 'string') {
+                console.error("Google Login URL return Sueccess", response);
+                // 구글 로그인 URL로 리디렉트
+                window.location.href = response;
+                return Promise.resolve(response);
+            } else {
+                console.error("Google Signin ERROR: Invalid response type", response);
+                alert("구글 로그인 중 오류가 발생했습니다.");
+            }
+        })
+        .catch((error) => {
+            console.error("Google Signin ERROR:", error);
+            alert("구글 로그인 중 오류가 발생했습니다.");
+            return Promise.reject(error);
+        });
+}
+
+// 구글 로그인 콜백 처리
+// export function handleGoogleCallback(navigate) {
+//     const params = new URLSearchParams(window.location.search);
+//     const token = params.get('token');
+//     const email = params.get('email');
+    
+//     alert("Params: " + params); // 디버깅용 알림
+//     alert("Token: " + token); // 디버깅용 알림
+//     alert("Email: " + email); // 디버깅용 알림
+
+//     if (token && email) {
+//         // 로컬 스토리지에 토큰 저장
+//         localStorage.setItem("GOOGLE_ACCESS_TOKEN", token);
+//         localStorage.setItem("user_email", email);
+        
+//         alert("token : " + localStorage.getItem("GOOGLE_ACCESS_TOKEN"))
+//         // 홈 페이지로 리디렉션
+//         window.location.href = "/";
+//         alert("todo 가즈아");
+//     } else {
+//         console.error("URL에 토큰 또는 이메일이 없습니다.");
+//         window.location.href = "/login";
+//     }
+// }
+
+export function handleGoogleCallback() {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    const email = params.get('email');
+    
+    if (token && email) {
+        // 로컬 스토리지에 토큰 저장
+        localStorage.setItem("GOOGLE_ACCESS_TOKEN", token);
+        localStorage.setItem("user_email", email);
+        alert("token: " + token);
+        alert("userEmail: " + email);
+
+        // 홈 페이지로 리디렉션
+        window.location.href = "/";
+    } else {
+        console.error("URL에 토큰 또는 이메일이 없습니다.");
+        window.location.href = "/login";
+    }
 }
 
 // 로그아웃

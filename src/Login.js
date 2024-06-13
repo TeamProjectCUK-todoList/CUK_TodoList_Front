@@ -37,7 +37,7 @@ class Login extends React.Component {
     handleGoogleSignin() {
         googleSignin()
             .then((response) => {
-                alert("Google Signin success ", response);
+                alert("Google Login URL return Success", response);
             })
             .catch((error) => {
                 console.error("Google Signin error:", error);

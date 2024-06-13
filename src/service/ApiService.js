@@ -5,7 +5,7 @@ export function call(api, method, request) {
         "Content-Type": "application/json",
     });
 
-    const accessToken = localStorage.getItem("LOCAL_ACCESS_TOKEN");
+    const accessToken = localStorage.getItem("ACCESS_TOKEN");
     if (accessToken) {
         headers.append("Authorization", "Bearer " + accessToken);
     }
@@ -53,7 +53,7 @@ export function signin(userDTO) {
         .then((response) => {
             if (response.token) {
                 // local 스토리지에 토큰 저장
-                localStorage.setItem("LOCAL_ACCESS_TOKEN", response.token);
+                localStorage.setItem("ACCESS_TOKEN", response.token);
                 // token이 존재하는 경우 todo 화면으로 리디렉트
                 window.location.href = "/";
             }

@@ -10,7 +10,7 @@ import { Paper, List, Container, Grid, Typography, Box, Button, IconButton, List
 import { ArrowBack, ArrowForward, Delete as DeleteIcon } from '@material-ui/icons';
 import './App.css';
 import { call, signout } from './service/ApiService';
-import { format, addDays, startOfMonth, differenceInDays, startOfToday } from 'date-fns';
+import { format, addDays, startOfMonth, differenceInDays, startOfToday, isSameDay } from 'date-fns';
 import { toDate, toZonedTime } from 'date-fns-tz';
 import ErrorBoundary from './ErrorBoundary';
 import DDayIcon from './images/d_day_icon.png';
@@ -242,6 +242,21 @@ class App extends React.Component {
     }
   }
 
+  getTileClassName = ({ date, view }) => {
+    const today = startOfToday();
+    const { date: selectedDate } = this.state;
+
+    if (view === 'month') {
+      if (isSameDay(date, today)) {
+        return 'react-calendar__tile--now';
+      }
+
+      if (isSameDay(date, selectedDate)) {
+        return 'react-calendar__tile--active';
+      }
+    }
+  }
+
   render() {
     const { date, todoItems, eventItems, loading, activeStartDate } = this.state;
     const formattedDate = `${date.getFullYear()}년 ${String(date.getMonth() + 1).padStart(2, '0')}월 ${String(date.getDate()).padStart(2, '0')}일`;
@@ -272,13 +287,26 @@ class App extends React.Component {
       </List>
     );
 
-    // Text and Button without AppBar
     const topBar = (
-      <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
-        <Typography variant='h6'>TO-DO LIST{this.state.userProv && `(${this.state.userProv})`}</Typography>
-        <Button className="logout-button" onClick={signout}>logout</Button>
-      </Box>
+      <Container maxWidth="md">
+        <Box 
+          display="flex" 
+          justifyContent="center" 
+          alignItems="center" 
+          p={2} 
+          style={{
+            backgroundColor: '#ffffff', 
+            borderRadius: '8px', 
+            marginTop: '8px', 
+            border: '5px solid #8e8d8a' // 테두리 추가
+          }}
+        >
+          <Typography variant='h4' style={{ fontWeight: 'bold', color: '#8e8d8a' }}> TO-DO LIST</Typography>
+          <Button className="logout-button" onClick={signout} style={{ position: 'absolute', right: 50, top: 25, textTransform: 'capitalize' }}>Logout</Button>
+        </Box>
+      </Container>
     );
+    
 
     // D-day list for events
     const dDayList = dDayEvents.length > 0 && (
@@ -286,18 +314,26 @@ class App extends React.Component {
         <List>
           {dDayEvents.map((event, idx) => (
             <ListItem key={event.id}>
-              <ListItemText primary={`${event.title}: D-${event.dDay}`} />
+              <ListItemText>
+                <Typography variant="body1" component="span" style={{ marginRight: '12px' }}>
+                  {`D-${event.dDay}`}
+                </Typography>
+                <Typography variant="body1" component="span">
+                  {event.title}
+                </Typography>
+              </ListItemText>
             </ListItem>
           ))}
         </List>
       </Box>
     );
 
+
     const todoEventListPage = (
       <div>
         {topBar}
         <Container maxWidth="md">
-          <Box mt={4}>
+          <Box mt={2}>
             <Grid container spacing={2}>
               {/* 캘린더 */}
               <Grid item xs={12} md={6}>
@@ -307,6 +343,7 @@ class App extends React.Component {
                     onDateChange={this.handleCalendarDateChange}
                     activeStartDate={activeStartDate}
                     tileContent={this.getTileContent}
+                    tileClassName={this.getTileClassName} // 추가된 부분
                   />
 
                   <Box className="section-title" style={{ margin: 5 }}>
@@ -373,7 +410,7 @@ class App extends React.Component {
                   </Box>
                   {/* Event 리스트 갯수 */}
                   <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Box ml="25px">
+                    <Box ml="16px">
                       <Typography variant="body2" className="status-text">
                         Total: {totalEvents}
                       </Typography>
@@ -418,3 +455,4 @@ class App extends React.Component {
 }
 
 export default App;
+

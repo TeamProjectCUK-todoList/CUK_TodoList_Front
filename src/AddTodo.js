@@ -1,6 +1,23 @@
 import React from "react";
-import { TextField, Button, Box } from "@material-ui/core";
+import { TextField, Button, Box, makeStyles } from "@material-ui/core";
 import './App.css';
+
+// CSS 변수를 가져오는 함수
+const getCSSVariableValue = (variable) => getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+
+const useStyles = makeStyles({
+    underline: {
+        '&:before': {
+            borderBottom: `1px solid ${getCSSVariableValue('--secondary-color')}`, // 기본 언더라인 색상
+        },
+        '&:hover:not(.Mui-disabled):before': {
+            borderBottom: `2px solid ${getCSSVariableValue('--default-black')}`, // 호버 시 언더라인 색상
+        },
+        '&:after': {
+            borderBottom: `2px solid ${getCSSVariableValue('--primary-color')}`, // 포커스 시 언더라인 색상
+        },
+    },
+});
 
 class AddTodo extends React.Component {
     constructor(props) {
@@ -45,6 +62,7 @@ class AddTodo extends React.Component {
     }
 
     render() {
+        const classes = this.props.classes;
         const { isButtonDisabled, isHovered } = this.state;
         
         const buttonClass = isButtonDisabled
@@ -58,6 +76,11 @@ class AddTodo extends React.Component {
                         placeholder="Add Todo here"
                         onChange={this.onInputChange}
                         value={this.state.item.title}
+                        InputProps={{
+                            classes: {
+                                underline: classes.underline,
+                            },
+                        }}
                         onKeyPress={this.enterKeyEventHandler}
                         style={{ flex: 1, marginRight: 8 }}
                     />
@@ -77,6 +100,7 @@ class AddTodo extends React.Component {
     }
 }
 
-export default AddTodo;
-
-
+export default function WrappedAddTodo(props) {
+    const classes = useStyles();
+    return <AddTodo {...props} classes={classes} />;
+}

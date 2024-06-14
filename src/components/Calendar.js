@@ -7,7 +7,7 @@ import './Calendar.css';
 
 moment.locale('en-gb');
 
-const MyCalendar = ({ date, onDateChange, activeStartDate, tileContent }) => {
+const MyCalendar = ({ date, onDateChange, activeStartDate, tileContent, tileClassName }) => {
   return (
     <div className="calendar-container">
       <Calendar
@@ -18,6 +18,7 @@ const MyCalendar = ({ date, onDateChange, activeStartDate, tileContent }) => {
         locale="en-GB"
         className="custom-calendar"
         tileContent={tileContent}
+        tileClassName={tileClassName} // 추가된 부분
       />
     </div>
   );

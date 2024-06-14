@@ -1,12 +1,12 @@
 .weather-container {
-  color: black;
+  color: var(--default-black);
   text-align: center;
   padding: 20px; /* DigitalClock과 동일한 padding */
   border-radius: 10px; /* DigitalClock과 동일한 border-radius */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: absolute;
-  bottom: 155px; /* DigitalClock의 위에 더 위로 배치되도록 설정 */
-  right: 42px;
+  bottom: 145px; /* DigitalClock의 위에 더 위로 배치되도록 설정 */
+  right: 27px;
   width: 255px; /* DigitalClock과 동일한 width */
   height: 50px; /* 높이 추가 */
   display: flex;

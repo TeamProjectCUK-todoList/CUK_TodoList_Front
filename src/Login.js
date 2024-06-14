@@ -1,6 +1,8 @@
 import React from "react";
 import { signin, googleSignin } from "./service/ApiService";
 import { Button, TextField, Grid, Link, Container, Typography, Paper } from "@material-ui/core";
+import GoogleIcon from './images/google-logo.png'; // 구글 아이콘 이미지 경로 설정
+import './Login.css'; // 스타일 파일 추가
 
 class Login extends React.Component {
     constructor(props) {
@@ -17,8 +19,7 @@ class Login extends React.Component {
         const data = new FormData(event.target);
         const email = data.get("email");
         const password = data.get("password");
-        
-        console.log("로그인");
+
         // 널 값 처리
         if ((email === "") || (password === "")) {
             alert("아이디 및 비밀번호를 확인해주세요");
@@ -100,15 +101,16 @@ class Login extends React.Component {
                             </Grid>
                         </Grid>
                     </form>
-                    <Grid container spacing={2} style={{ marginTop: "10px" }}>
+                    <Grid container spacing={2} style={{ marginTop: "5px" }}>
                         <Grid item xs={12}>
                             <Button
+                                className="google-btn"
+                                onClick={this.handleGoogleSignin}
                                 fullWidth
                                 variant="contained"
-                                color="secondary"
-                                onClick={this.handleGoogleSignin}
                             >
-                                구글 로그인
+                                <img src={GoogleIcon} alt="Google Icon" className="google-icon" />
+                                Sign in with Google
                             </Button>
                         </Grid>
                         <Grid item>

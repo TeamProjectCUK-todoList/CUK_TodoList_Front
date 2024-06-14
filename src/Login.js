@@ -1,5 +1,5 @@
 import React from "react";
-import { signin } from "./service/ApiService";
+import { signin, googleSignin } from "./service/ApiService";
 import { Button, TextField, Grid, Link, Container, Typography, Paper } from "@material-ui/core";
 
 class Login extends React.Component {
@@ -9,6 +9,7 @@ class Login extends React.Component {
             error: ''
         };
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleGoogleSignin = this.handleGoogleSignin.bind(this);
     }
 
     handleSubmit(event) {
@@ -22,7 +23,7 @@ class Login extends React.Component {
         if ((email === "") || (password === "")) {
             alert("아이디 및 비밀번호를 확인해주세요");
         } else {
-            signin({ email: email, password: password })
+            signin({ email: email, password: password, provider: "LOCAL"})
                 .then((response) => {
                     console.log("Login successful:", response);
                 })
@@ -31,6 +32,17 @@ class Login extends React.Component {
                     this.setState({ error: '로그인 정보가 올바르지 않습니다.' });
                 });
         }
+    }
+
+    handleGoogleSignin() {
+        googleSignin()
+            .then((response) => {
+                alert("Google Login URL return Success", response);
+            })
+            .catch((error) => {
+                console.error("Google Signin error:", error);
+                this.setState({ error: '구글 로그인 중 오류가 발생했습니다.' });
+            });
     }
 
     render() {
@@ -86,13 +98,25 @@ class Login extends React.Component {
                                     로그인
                                 </Button>
                             </Grid>
-                            <Grid item>
-                                <Link href="/signup" variant="body2">
-                                    계정이 없습니까? 여기서 가입하세요.
-                                </Link>
-                            </Grid>
                         </Grid>
                     </form>
+                    <Grid container spacing={2} style={{ marginTop: "10px" }}>
+                        <Grid item xs={12}>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                color="secondary"
+                                onClick={this.handleGoogleSignin}
+                            >
+                                구글 로그인
+                            </Button>
+                        </Grid>
+                        <Grid item>
+                            <Link href="/signup" variant="body2">
+                                계정이 없습니까? 여기서 가입하세요.
+                            </Link>
+                        </Grid>
+                    </Grid>
                 </Paper>
             </Container>
         );

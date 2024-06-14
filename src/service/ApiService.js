@@ -12,28 +12,33 @@ export function call(api, method, request) {
 
     let options = {
         headers: headers,
-        url: API_BASE_URL + api,
         method: method,
     };
     if (request) {
         options.body = JSON.stringify(request);
     }
 
-    return fetch(options.url, options)
+    return fetch(API_BASE_URL + api, options)
         .then((response) => {
-            return response.json().then((json) => {
-                if (!response.ok) {
-                    return Promise.reject(json);
-                }
-                return json;
-            }).catch((err) => {
-                if (!response.ok) {
-                    return Promise.reject({ status: response.status, message: response.statusText });
-                }
-                return { status: response.status, message: response.statusText };
-            });
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                return response.json().then((json) => {
+                    if (!response.ok) {
+                        return Promise.reject(json);
+                    }
+                    return json;
+                });
+            } else {
+                return response.text().then((text) => {
+                    if (!response.ok) {
+                        return Promise.reject({ status: response.status, message: response.statusText });
+                    }
+                    return text;
+                });
+            }
         })
         .catch((error) => {
+            // alert("403 error???!" + error)
             console.error("API call error:", error);
             if (error.status === 403) {
                 window.location.href = "/login";
@@ -42,13 +47,14 @@ export function call(api, method, request) {
         });
 }
 
-// 로그인을 위한 API 서비스 메소드 signin
+// 로컬 회원 로그인을 위한 API 서비스 메소드 signin
 export function signin(userDTO) {
     return call("/auth/signin", "POST", userDTO)
         .then((response) => {
             if (response.token) {
                 // local 스토리지에 토큰 저장
                 localStorage.setItem("ACCESS_TOKEN", response.token);
+                localStorage.setItem("userId", response.id);
                 // token이 존재하는 경우 todo 화면으로 리디렉트
                 window.location.href = "/";
             }
@@ -60,7 +66,7 @@ export function signin(userDTO) {
         });
 }
 
-// 회원 가입 요청
+// 로컬 회원 가입 요청
 export function signup(userDTO) {
     return call("/auth/signup", "POST", userDTO)
         .then((response) => {
@@ -71,6 +77,27 @@ export function signup(userDTO) {
         .catch((error) => {
             console.error("Signup ERROR:", error);
             alert("회원 가입 중 오류가 발생했습니다.");
+            return Promise.reject(error);
+        });
+}
+
+// 구글 로그인 요청
+export function googleSignin() {
+    return call("/api/v1/oauth2/google", "POST")
+        .then((response) => {
+            if (typeof response === 'string') {
+                console.error("Google Login URL return Sueccess", response);
+                // 구글 로그인 URL로 리디렉트
+                window.location.href = response;
+                return Promise.resolve(response);
+            } else {
+                console.error("Google Signin ERROR: Invalid response type", response);
+                alert("구글 로그인 중 오류가 발생했습니다.");
+            }
+        })
+        .catch((error) => {
+            console.error("Google Signin ERROR:", error);
+            alert("구글 로그인 중 오류가 발생했습니다.");
             return Promise.reject(error);
         });
 }

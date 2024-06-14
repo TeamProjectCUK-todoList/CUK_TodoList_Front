@@ -19,11 +19,11 @@ const useStyles = makeStyles({
     },
 });
 
-class AddTodo extends React.Component {
+class AddEvent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            item: { title: "" },
+            item: { title: "", done: true },
             isButtonDisabled: true,
             isHovered: false
         };
@@ -42,7 +42,7 @@ class AddTodo extends React.Component {
     onButtonClick = () => {
         this.add(this.state.item);
         this.setState({
-            item: { title: "" },
+            item: { title: "", done: true },
             isButtonDisabled: true,
         });
     }
@@ -73,15 +73,15 @@ class AddTodo extends React.Component {
             <Box display="flex" justifyContent="center" margin={2}>
                 <Box display="flex" alignItems="center" style={{ width: '100%', maxWidth: 600 }}>
                     <TextField
-                        placeholder="Add Todo here"
+                        placeholder="Add Event here"
                         onChange={this.onInputChange}
                         value={this.state.item.title}
+                        onKeyPress={this.enterKeyEventHandler}
                         InputProps={{
                             classes: {
                                 underline: classes.underline,
                             },
                         }}
-                        onKeyPress={this.enterKeyEventHandler}
                         style={{ flex: 1, marginRight: 8 }}
                     />
                     <Button
@@ -100,7 +100,7 @@ class AddTodo extends React.Component {
     }
 }
 
-export default function WrappedAddTodo(props) {
+export default function WrappedAddEvent(props) {
     const classes = useStyles();
-    return <AddTodo {...props} classes={classes} />;
+    return <AddEvent {...props} classes={classes} />;
 }

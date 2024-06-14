@@ -1,28 +1,13 @@
 import React from "react";
-import { ListItem, ListItemText, InputBase, Checkbox, ListItemSecondaryAction, IconButton, withStyles } from "@material-ui/core";
+import { ListItem, ListItemText, InputBase, ListItemSecondaryAction, IconButton } from "@material-ui/core";
+import { Toggle } from "@fluentui/react";
 import CloseIcon from "@material-ui/icons/Close";
 import './App.css';
 
 // CSS 변수 값을 가져오는 함수
-const getCSSVariableValue = (variable) => getComputedStyle(document.documentElement).getPropertyValue(variable);
+const getCSSVariableValue = (variable) => getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
 
-// Custom styled Checkbox
-const CustomCheckbox = withStyles({
-  root: {
-    color: getCSSVariableValue('--secondary-color').trim(), // 기본 상태 테두리 색상
-    '&:hover': {
-      backgroundColor: getCSSVariableValue('--checkbox-hover-bg').trim(), // 마우스 커서가 체크박스 위에 위치했을 때
-    },
-  },
-  checked: {
-    color: `${getCSSVariableValue('--checked-bg-color').trim()} !important`, // 체크된 상태의 테두리 색상
-  },
-  indeterminate: {
-    color: getCSSVariableValue('--default-white').trim(),
-  },
-})((props) => <Checkbox color="default" {...props} />);
-
-class Todo extends React.Component {
+class Event extends React.Component {
   constructor(props) {
     super(props);
     this.state = { item: props.item, readOnly: true };
@@ -51,21 +36,35 @@ class Todo extends React.Component {
     this.setState({ item: thisItem });
   }
 
-  checkboxEventHandler = (e) => {
+  toggleEventHandler = (e, checked) => {
     const thisItem = this.state.item;
-    thisItem.done = !thisItem.done;
-    this.setState({ readOnly: true });
+    thisItem.done = checked;
+    this.setState({ item: thisItem });
     this.update(this.state.item);
   }
 
   render() {
     const item = this.state.item;
+    const toggleStyles = {
+      root: {
+        marginBottom: '8px',
+      },
+      pill: {
+        backgroundColor: item.done ? getCSSVariableValue('--checked-bg-color') : getCSSVariableValue('--toggle-default-bg'),
+        borderColor: item.done ? getCSSVariableValue('--checked-bg-color') : getCSSVariableValue('--toggle-default-bg'),
+        ':hover': {
+          backgroundColor: item.done ? getCSSVariableValue('--toggle-hover-bg') : getCSSVariableValue('--secondary-color'),
+          borderColor: item.done ? getCSSVariableValue('--toggle-hover-bg') : getCSSVariableValue('--secondary-color'),
+        },
+      },
+      thumb: {
+        backgroundColor: item.done ? getCSSVariableValue('--default-white') : getCSSVariableValue('--default-white'),
+        borderColor: item.done ? getCSSVariableValue('--default-white') : getCSSVariableValue('--default-white'),
+      },
+    };
+
     return (
       <ListItem>
-        <CustomCheckbox
-          checked={item.done}
-          onChange={this.checkboxEventHandler}
-        />
         <ListItemText>
           <InputBase
             inputProps={{ "aria-label": "naked", readOnly: this.state.readOnly }}
@@ -78,10 +77,15 @@ class Todo extends React.Component {
             onClick={this.offReadOnlyMode}
             onChange={this.editEventHandler}
             onKeyPress={this.enterKeyEventHandler}
-            style={{ textDecoration: item.done ? 'line-through' : 'none' }}
           />
         </ListItemText>
-
+        <div style={{ marginRight: '16px', marginTop: '8px' }}>
+          <Toggle
+            styles={toggleStyles}
+            checked={item.done}
+            onChange={this.toggleEventHandler}
+          />
+        </div>
         <ListItemSecondaryAction>
           <IconButton aria-label="delete" onClick={this.deleteEventHandler}>
             <CloseIcon />
@@ -92,4 +96,4 @@ class Todo extends React.Component {
   }
 }
 
-export default Todo;
+export default Event;
